@@ -1,0 +1,88 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  longDesc    String?  @db.Text
+  imageUrl    String?
+  tags        String[]
+  githubUrl   String?
+  liveUrl     String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  likes       Int      @default(0)
+}
+
+model Experience {
+  id          String    @id @default(cuid())
+  company     String
+  role        String
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  description String    @db.Text
+  location    String?
+  order       Int       @default(0)
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  school      String
+  degree      String
+  field       String?
+  startDate   DateTime
+  endDate     DateTime?
+  description String?   @db.Text
+  order       Int       @default(0)
+}
+
+model Skill {
+  id       String  @id @default(cuid())
+  name     String
+  level    Int     // 0-100
+  category String  // "Frontend" | "Backend" | "DevOps" | "Design"
+  icon     String?
+  order    Int     @default(0)
+}
+
+model About {
+  id        String   @id @default(cuid())
+  bio       String   @db.Text
+  photo     String?
+  cv        String?
+  location  String?
+  phone     String?
+  email     String?
+  github    String?
+  linkedin  String?
+  twitter   String?
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  body      String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
