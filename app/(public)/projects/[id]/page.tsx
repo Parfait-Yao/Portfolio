@@ -54,7 +54,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 <Code size={12} strokeWidth={1.5} /> Stack
               </span>
               <div className="flex gap-2">
-                {project.tags.map(tag => (
+                {project.tags.map((tag: any) => (
                   <span key={tag} className="font-body text-foreground font-semibold">{tag}</span>
                 ))}
               </div>
