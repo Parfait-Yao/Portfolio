@@ -121,7 +121,7 @@ export default async function ExperiencePage() {
 
       {/* 3. EXPERIENCE BLOCKS - ALTERNATING */}
       <div className="space-y-0">
-        {displayExperiences.map((exp, index) => (
+        {displayExperiences.map((exp: any, index: number) => (
           <Section 
             key={exp.id} 
             className={`py-[80px] md:py-[140px] ${index % 2 !== 0 ? 'bg-card' : 'bg-background'}`}
@@ -201,7 +201,7 @@ export default async function ExperiencePage() {
               </div>
               
               <div className="space-y-12">
-                {displayEducation.map((edu) => (
+                {displayEducation.map((edu: any) => (
                   <div key={edu.id} className="group relative flex gap-8">
                      <div className="w-14 h-14 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform">
                         <GraduationCap size={28} />
