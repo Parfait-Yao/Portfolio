@@ -2,8 +2,14 @@ import React from "react"
 import { prisma } from "@/lib/prisma"
 import { MapPin, Mail, Globe, Link as LinkIcon, User } from "lucide-react"
 import Section from "@/components/public/Section"
+import { cookies } from 'next/headers'
+import { translations } from '@/lib/translations'
 
 export default async function AboutPage() {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  const t = translations[locale];
+
   const about = await prisma.about.findFirst()
 
   return (
@@ -12,10 +18,10 @@ export default async function AboutPage() {
       <Section className="pt-[140px] pb-12 md:pt-[180px]">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
-            Moi & Mon Parcours
+            {t.aboutPage.tag}
           </span>
           <h1 className="mb-8 font-serif text-[clamp(40px,8vw,80px)] leading-[1.05] tracking-tight">
-            Façonner des expériences <br /> <span className="text-foreground/50 italic">avec précision.</span>
+            {t.aboutPage.title1} <br /> <span className="text-foreground/50 italic">{t.aboutPage.title2}</span>
           </h1>
         </div>
       </Section>
@@ -38,7 +44,7 @@ export default async function AboutPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-[12px] font-bold tracking-[0.15em] uppercase text-foreground/40 mb-6">Contact direct</h3>
+                <h3 className="text-[12px] font-bold tracking-[0.15em] uppercase text-foreground/40 mb-6">{t.aboutPage.contactTitle}</h3>
                 <div className="space-y-4 font-jakarta text-foreground font-semibold text-[16px]">
                   <a href={`mailto:${about?.email}`} className="flex items-center gap-4 hover:text-black/50 transition-colors">
                     <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center text-foreground/60">
@@ -56,7 +62,7 @@ export default async function AboutPage() {
               </div>
 
               <div>
-                <h3 className="text-[12px] font-bold tracking-[0.15em] uppercase text-foreground/40 mb-6">Social</h3>
+                <h3 className="text-[12px] font-bold tracking-[0.15em] uppercase text-foreground/40 mb-6">{t.aboutPage.socialTitle}</h3>
                 <div className="flex gap-4">
                    <a href={about?.github || "#"} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-foreground/5 rounded-full flex items-center justify-center hover:bg-foreground hover:text-background transition-all shadow-sm group">
                     <Globe size={18} strokeWidth={1.5} className="group-hover:rotate-12 transition-transform" />
@@ -72,7 +78,7 @@ export default async function AboutPage() {
           {/* Bio & Statistics Column */}
           <div className="pt-0 md:pt-12">
             <h2 className="text-[clamp(32px,5vw,48px)] font-serif text-foreground leading-[1.1] mb-12">
-            L'architecture du code <br /> <span className="text-foreground/40 italic">rencontre le design.</span>
+            {t.aboutPage.contentTitle1} <br /> <span className="text-foreground/40 italic">{t.aboutPage.contentTitle2}</span>
           </h2>
             <div className="font-body text-[18px] md:text-[20px] text-foreground/70 leading-[1.7] space-y-8 whitespace-pre-line max-w-xl">
               {about?.bio}
@@ -81,11 +87,11 @@ export default async function AboutPage() {
             <div className="grid grid-cols-2 gap-12 mt-24 pt-16 border-t border-border">
               <div className="group">
                 <p className="font-serif text-6xl text-foreground transition-transform group-hover:translate-x-1">05+</p>
-                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground/50 mt-6">Années d'expertise</p>
+                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground/50 mt-6">{t.aboutPage.stat1}</p>
               </div>
               <div className="group">
                 <p className="font-serif text-6xl text-foreground transition-transform group-hover:translate-x-1">40+</p>
-                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground/50 mt-6">Projets déployés</p>
+                <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground/50 mt-6">{t.aboutPage.stat2}</p>
               </div>
             </div>
           </div>

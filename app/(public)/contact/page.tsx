@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Mail, MapPin, Send, Globe, Link as LinkIcon, User, ArrowRight, ChevronRight, MessageSquare } from "lucide-react"
 import Section from "@/components/public/Section"
 import { motion, AnimatePresence } from "framer-motion"
+import { useLanguage } from "@/context/LanguageContext"
 
 const schema = z.object({
   name: z.string().min(2, "Le nom est requis"),
@@ -18,6 +19,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 export default function ContactPage() {
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   
@@ -61,13 +63,13 @@ export default function ContactPage() {
       <Section className="pt-[160px] pb-[40px] md:pt-[200px] md:pb-[100px]">
         <div className="max-w-6xl mx-auto px-5 sm:px-6">
           <span className="pill-tag mb-6">
-            Contact
+            {t.contactPage.tag}
           </span>
           <h1 className="mb-8 font-serif text-[clamp(28px,11vw,80px)] leading-[1.05] tracking-tight text-pretty">
-            Démarrons un <br /> <span className="text-foreground/40 italic">nouveau projet.</span>
+            {t.contactPage.title1} <br /> <span className="text-foreground/40 italic">{t.contactPage.title2}</span>
           </h1>
           <p className="font-body text-[17px] md:text-[21px] text-foreground/70 leading-relaxed max-w-2xl px-1">
-            Que ce soit pour une simple question ou une demande d'accompagnement sur un projet complexe, je suis à votre écoute pour architecturer la solution idéale.
+            {t.contactPage.desc}
           </p>
         </div>
       </Section>
@@ -89,26 +91,26 @@ export default function ContactPage() {
             {/* Left Side: Let's talk & Form */}
             <div className="flex-1 space-y-12 relative z-10">
               <div>
-                <h2 className="font-serif text-[42px] leading-tight mb-4">Discutons.</h2>
+                <h2 className="font-serif text-[42px] leading-tight mb-4">{t.contactPage.letstalk}</h2>
                 <p className="font-body text-foreground/50 text-[15px] leading-relaxed max-w-sm">
-                  Pour une demande de devis ou simplement échanger autour d'un café digital, n'hésitez pas à me contacter directement ou via ce formulaire.
+                  {t.contactPage.letstalkDesc}
                 </p>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-6">
                    <div className="space-y-2">
-                     <label className="text-[11px] font-bold text-foreground/30 uppercase tracking-widest ml-1">Nom Complet</label>
+                     <label className="text-[11px] font-bold text-foreground/30 uppercase tracking-widest ml-1">{t.contactPage.formName}</label>
                      <input 
                        {...register("name")}
-                       placeholder="Votre nom"
+                       placeholder={t.contactPage.formNamePlaceholder}
                        className="w-full bg-muted border-none rounded-2xl px-6 h-14 font-body text-[15px] focus:ring-2 focus:ring-foreground/5 transition-all outline-none text-foreground"
                      />
                      {errors.name && <p className="text-red-500 text-[10px] font-bold mt-1 ml-1">{errors.name.message}</p>}
                    </div>
 
                    <div className="space-y-2">
-                     <label className="text-[11px] font-bold text-foreground/30 uppercase tracking-widest ml-1">Email</label>
+                     <label className="text-[11px] font-bold text-foreground/30 uppercase tracking-widest ml-1">{t.contactPage.formEmail}</label>
                      <input 
                        {...register("email")}
                        placeholder="votre@email.com"
@@ -118,10 +120,10 @@ export default function ContactPage() {
                    </div>
 
                    <div className="space-y-2">
-                     <label className="text-[11px] font-bold text-foreground/30 uppercase tracking-widest ml-1">Votre Message</label>
+                     <label className="text-[11px] font-bold text-foreground/30 uppercase tracking-widest ml-1">{t.contactPage.formMsg}</label>
                      <textarea 
                        {...register("body")}
-                       placeholder="Décrivez votre vision..."
+                       placeholder={t.contactPage.formMsgPlaceholder}
                        rows={4}
                        className="w-full bg-muted border-none rounded-[28px] p-6 font-body text-[15px] focus:ring-2 focus:ring-foreground/5 transition-all outline-none resize-none text-foreground"
                      ></textarea>
@@ -136,7 +138,7 @@ export default function ContactPage() {
                   disabled={loading}
                   className="bg-primary text-primary-foreground px-10 h-14 lg:h-16 rounded-full font-jakarta font-bold text-[13px] uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg disabled:opacity-50"
                 >
-                  {loading ? "Envoi..." : submitted ? "Envoyé !" : "Envoyer le message"}
+                  {loading ? t.contactPage.btnSending : submitted ? t.contactPage.btnSent : t.contactPage.btnSend}
                 </motion.button>
               </form>
             </div>

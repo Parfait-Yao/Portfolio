@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -33,8 +34,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster position="top-right" />
+          <LanguageProvider>
+            {children}
+            <Toaster position="top-right" />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

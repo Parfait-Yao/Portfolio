@@ -4,8 +4,14 @@ import ProjectList from "@/components/public/ProjectList"
 import Section from "@/components/public/Section"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
+import { cookies } from 'next/headers'
+import { translations } from '@/lib/translations'
 
 export default async function ProjectsPage() {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  const t = translations[locale];
+
   let projects = await prisma.project.findMany({
     orderBy: [
       { featured: 'desc' },
@@ -79,13 +85,13 @@ export default async function ProjectsPage() {
       <Section className="pt-[140px] pb-[72px] md:pt-[180px] md:pb-[100px]">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
-            Portfolio
+            {t.projectsPage.tag}
           </span>
           <h1 className="mb-8 text-foreground">
-            Mes <span className="text-foreground/50">réalisations.</span>
+            {t.projectsPage.title1} <span className="text-foreground/50">{t.projectsPage.title2}</span>
           </h1>
           <p className="font-body text-[18px] md:text-[20px] text-foreground/70 leading-relaxed max-w-2xl">
-            Une sélection rigoureuse de projets mêlant excellence technique, design minimaliste et performance. Chaque projet est une réponse à un défi complexe.
+            {t.projectsPage.desc}
           </p>
         </div>
       </Section>
@@ -97,7 +103,7 @@ export default async function ProjectsPage() {
           
           {projects.length === 0 && (
             <div className="py-32 text-center bg-card border border-dashed border-border rounded-3xl">
-              <p className="font-body text-foreground/40 font-medium">Aucun projet n'est disponible pour le moment.</p>
+              <p className="font-body text-foreground/40 font-medium">{t.projectsPage.noProjects}</p>
             </div>
           )}
         </div>
@@ -107,10 +113,10 @@ export default async function ProjectsPage() {
       <Section className="bg-primary text-primary-foreground rounded-[40px] mx-4 md:mx-10 mb-10 overflow-hidden text-center py-16">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-primary-foreground mb-10">
-            Un projet en vue ? <br /> <span className="text-primary-foreground/60 italic">Discutons-en ensemble.</span>
+            {t.projectsPage.contactTitle1} <br /> <span className="text-primary-foreground/60 italic">{t.projectsPage.contactTitle2}</span>
           </h2>
           <Link href="/contact" className="bg-background text-foreground px-12 py-5 rounded-full font-jakarta font-bold hover:bg-muted transition-all inline-flex items-center gap-4 text-[16px] uppercase tracking-widest hover:scale-105 active:scale-95 shadow-xl">
-            Me contacter <ChevronRight size={20} strokeWidth={2.5} />
+            {t.projectsPage.contactBtn} <ChevronRight size={20} strokeWidth={2.5} />
           </Link>
         </div>
       </Section>

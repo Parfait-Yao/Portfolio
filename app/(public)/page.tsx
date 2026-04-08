@@ -27,9 +27,8 @@ import TechCell from "@/components/public/TechCell"
 import Magnetic from "@/components/public/Magnetic"
 import Hero from "@/components/public/Hero"
 
-
-
-
+import { cookies } from 'next/headers'
+import { translations } from '@/lib/translations'
 const techIcons: Record<string, { label: string }> = {
   'Next.js': { label: 'Framework' },
   'React': { label: 'Library' },
@@ -44,6 +43,10 @@ const techIcons: Record<string, { label: string }> = {
 }
 
 export default async function Home() {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  const t = translations[locale];
+
   const about = await prisma.about.findFirst()
   let featuredProjects = await prisma.project.findMany({
     where: { featured: true },
@@ -103,7 +106,7 @@ export default async function Home() {
       <section className="py-12 border-y border-border/50 bg-background transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6 overflow-hidden">
           <p className="text-center text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/30 mb-8">
-            Écosystème & Partenaires
+            {t.home.ecosystem}
           </p>
           <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
              <div className="flex items-center gap-2 font-jakarta font-extrabold text-2xl tracking-tighter text-foreground">
@@ -131,7 +134,7 @@ export default async function Home() {
                <div className="absolute w-[60%] aspect-square rounded-[24px] border-[6px] md:border-[8px] border-background bg-muted overflow-hidden transform -rotate-12 -translate-x-12 md:-translate-x-16 translate-y-6 shadow-lg z-10 transition-all duration-500 hover:-rotate-[15deg] hover:-translate-x-16 md:hover:-translate-x-20">
                   {featuredProjects[2].imageUrl ? (
                      <img src={featuredProjects[2].imageUrl} alt={featuredProjects[2].title} className="w-full h-full object-cover" />
-                  ) : <div className="w-full h-full flex items-center justify-center text-foreground/20 italic font-serif">Portfolio</div>}
+                  ) : <div className="w-full h-full flex items-center justify-center text-foreground/20 italic font-serif">{t.home.portfolioLabel}</div>}
                </div>
             )}
             
@@ -139,7 +142,7 @@ export default async function Home() {
                <div className="absolute w-[60%] aspect-square rounded-[24px] border-[6px] md:border-[8px] border-background bg-muted overflow-hidden transform rotate-12 translate-x-12 md:translate-x-16 translate-y-6 shadow-lg z-20 transition-all duration-500 hover:rotate-[15deg] hover:translate-x-16 md:hover:translate-x-20">
                   {featuredProjects[1].imageUrl ? (
                      <img src={featuredProjects[1].imageUrl} alt={featuredProjects[1].title} className="w-full h-full object-cover" />
-                  ) : <div className="w-full h-full flex items-center justify-center text-foreground/20 italic font-serif">Portfolio</div>}
+                  ) : <div className="w-full h-full flex items-center justify-center text-foreground/20 italic font-serif">{t.home.portfolioLabel}</div>}
                </div>
             )}
 
@@ -147,13 +150,13 @@ export default async function Home() {
                <div className="absolute w-[65%] aspect-square rounded-[24px] border-[8px] md:border-[10px] border-background bg-muted overflow-hidden transform z-30 shadow-2xl transition-all duration-500 hover:-translate-y-4">
                   {featuredProjects[0].imageUrl ? (
                      <img src={featuredProjects[0].imageUrl} alt={featuredProjects[0].title} className="w-full h-full object-cover" />
-                  ) : <div className="w-full h-full flex items-center justify-center text-foreground/20 italic font-serif">Portfolio</div>}
+                  ) : <div className="w-full h-full flex items-center justify-center text-foreground/20 italic font-serif">{t.home.portfolioLabel}</div>}
                </div>
             )}
           </div>
 
           <div className="inline-block px-4 py-1.5 mb-16 rounded-md bg-muted/60 font-mono text-[10px] md:text-[11px] font-bold tracking-[0.15em] text-foreground/50 uppercase">
-            SELECTION-PROJETS
+            {t.home.featuredTag}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 mb-16 w-full text-left">
@@ -163,11 +166,11 @@ export default async function Home() {
           </div>
           
           <p className="text-foreground/80 md:text-[17px] mb-10 max-w-[500px] font-medium leading-relaxed">
-            Une sélection de mes travaux les plus remarquables, <span className="text-foreground/40 font-normal">conçus avec une attention particulière au design et à la performance.</span>
+            {t.home.featuredDesc1}<span className="text-foreground/40 font-normal">{t.home.featuredDesc2}</span>
           </p>
 
           <Link href="/projects" className="bg-primary text-primary-foreground px-8 py-3.5 rounded-full font-jakarta font-semibold text-[14px] hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/10">
-            Voir la collection
+            {t.home.viewCollection}
           </Link>
           
         </div>
@@ -177,10 +180,10 @@ export default async function Home() {
       <Section className="text-center pt-[100px] pb-0">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
-            Expertise
+            {t.home.expertise}
           </span>
           <h2 className="mb-20 text-foreground">
-            Technologies <span className="text-foreground/40">maîtrisées.</span>
+            {t.home.techMastered}<span className="text-foreground/40">{t.home.techMasteredSub}</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-4 px-6">
             {Object.entries(techIcons).map(([name, data]) => (
@@ -201,22 +204,22 @@ export default async function Home() {
           {/* Image Side */}
           <div className="relative aspect-[4/5] rounded-[28px] overflow-hidden bg-muted border border-border group transition-all duration-300">
              <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity duration-700">
-               <span className="font-serif text-5xl italic text-foreground/20">Artisanal <br /> Digital.</span>
+               <span className="font-serif text-5xl italic text-foreground/20" dangerouslySetInnerHTML={{ __html: `${t.home.artisanal} <br /> ${t.home.digital}` }}></span>
              </div>
              {/* Decorative Elements */}
              <div className="absolute bottom-8 left-8 right-8 p-6 bg-background/20 backdrop-blur-md rounded-2xl border border-border/20 transition-colors duration-300">
-               <p className="text-foreground font-jakarta font-bold text-lg">Qualité & Performance</p>
-               <p className="text-foreground/60 text-sm">Engagement sur l'excellence technique à chaque étape.</p>
+               <p className="text-foreground font-jakarta font-bold text-lg">{t.home.qualityPerf}</p>
+               <p className="text-foreground/60 text-sm">{t.home.commitment}</p>
              </div>
           </div>
 
           {/* List Side */}
           <div className="space-y-14">
             <div>
-              <span className="pill-tag mb-6 text-foreground/40">Approche</span>
-              <h2 className="mb-8 text-foreground">Une méthodologie <br /> <span className="text-foreground/40 underline decoration-border underline-offset-8">axée sur le résultat.</span></h2>
+              <span className="pill-tag mb-6 text-foreground/40">{t.home.approach}</span>
+              <h2 className="mb-8 text-foreground" dangerouslySetInnerHTML={{ __html: `${t.home.methodology} <br /> <span class="text-foreground/40 underline decoration-border underline-offset-8">${t.home.methodologySub}</span>` }}></h2>
               <p className="font-body text-[18px] text-foreground/60 leading-relaxed max-w-xl">
-                Mon processus de développement allie rigueur architecturale et agilité pour transformer vos idées en produits finis exceptionnels.
+                {t.home.methodologyDesc}
               </p>
             </div>
 
@@ -226,8 +229,8 @@ export default async function Home() {
                    <Code size={24} />
                 </div>
                 <div>
-                  <h4 className="font-jakarta font-bold text-lg text-foreground mb-1">Architecture Propre</h4>
-                  <p className="text-foreground/40 text-[15px] leading-relaxed">Conception de bases solides, maintenables et évolutives dès le premier pixel.</p>
+                  <h4 className="font-jakarta font-bold text-lg text-foreground mb-1">{t.home.cleanArch}</h4>
+                  <p className="text-foreground/40 text-[15px] leading-relaxed">{t.home.cleanArchDesc}</p>
                 </div>
               </div>
 
@@ -236,8 +239,8 @@ export default async function Home() {
                    <Zap size={24} />
                 </div>
                 <div>
-                  <h4 className="font-jakarta font-bold text-lg text-foreground mb-1">Performance Critique</h4>
-                  <p className="text-foreground/40 text-[15px] leading-relaxed">Chaque seconde compte. J'optimise chaque application pour une vitesse de réponse instantanée.</p>
+                  <h4 className="font-jakarta font-bold text-lg text-foreground mb-1">{t.home.performance}</h4>
+                  <p className="text-foreground/40 text-[15px] leading-relaxed">{t.home.performanceDesc}</p>
                 </div>
               </div>
 
@@ -246,15 +249,15 @@ export default async function Home() {
                    <Smartphone size={24} />
                 </div>
                 <div>
-                  <h4 className="font-jakarta font-bold text-lg text-foreground mb-1">Expérience Mobile-First</h4>
-                  <p className="text-foreground/40 text-[15px] leading-relaxed">Des interfaces fluides et adaptatives conçues pour briller sur tous les écrans.</p>
+                  <h4 className="font-jakarta font-bold text-lg text-foreground mb-1">{t.home.mobileFirst}</h4>
+                  <p className="text-foreground/40 text-[15px] leading-relaxed">{t.home.mobileFirstDesc}</p>
                 </div>
               </div>
             </div>
 
             <Magnetic>
                <Link href="/contact" className="btn-primary group !px-10 !py-5">
-                 Commencer un projet <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                 {t.home.startProject} <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                </Link>
             </Magnetic>
           </div>
@@ -266,12 +269,11 @@ export default async function Home() {
         <div className="max-w-4xl mx-auto px-6 py-20 text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-background/10 to-transparent opacity-20 pointer-events-none" />
           
-          <h2 className="text-primary-foreground mb-12 text-[clamp(32px,6vw,56px)] leading-none">
-            Prêt à démarrer <br /> <span className="text-primary-foreground/50 italic">votre prochain projet ?</span>
+          <h2 className="text-primary-foreground mb-12 text-[clamp(32px,6vw,56px)] leading-none" dangerouslySetInnerHTML={{ __html: `${t.home.readyToStart} <br /> <span class="text-primary-foreground/50 italic">${t.home.readyToStartSub}</span>` }}>
           </h2>
           <Magnetic amount={0.15}>
             <Link href="/contact" className="bg-background text-primary px-14 py-6 rounded-full font-jakarta font-bold hover:opacity-90 transition-all hover:scale-105 active:scale-95 inline-flex items-center gap-4 text-[17px] uppercase tracking-widest shadow-xl">
-               Nous contacter <ChevronRight size={22} strokeWidth={2.5} />
+               {t.home.contactUs} <ChevronRight size={22} strokeWidth={2.5} />
             </Link>
           </Magnetic>
         </div>

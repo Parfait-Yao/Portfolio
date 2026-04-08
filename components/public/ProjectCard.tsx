@@ -3,8 +3,11 @@ import { motion } from "framer-motion"
 import { ExternalLink, ArrowUpRight } from "lucide-react"
 import { FaGithub } from "react-icons/fa6"
 import Link from "next/link"
+import { useLanguage } from '@/context/LanguageContext'
 
 export default function ProjectCard({ project }: { project: any }) {
+  const { t } = useLanguage()
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -23,7 +26,7 @@ export default function ProjectCard({ project }: { project: any }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-black/10">
-            <span className="font-serif text-4xl italic">Portfolio</span>
+            <span className="font-serif text-4xl italic">{t.home.portfolioLabel}</span>
           </div>
         )}
         
@@ -68,11 +71,11 @@ export default function ProjectCard({ project }: { project: any }) {
             href={`/projects/${project.id}`} 
             className="text-[11px] font-bold uppercase tracking-widest text-foreground hover:opacity-50 transition-opacity"
           >
-            Détails
+            {t.home.details}
           </Link>
           {project.featured && (
             <span className="ml-auto text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/30">
-              Selected
+              {t.home.selected}
             </span>
           )}
         </div>

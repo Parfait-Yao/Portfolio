@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Cpu, ChevronRight, Mail } from "lucide-react"
 import Link from "next/link"
 import Magnetic from "./Magnetic"
+import { useLanguage } from '@/context/LanguageContext'
 
 interface HeroProps {
   about: any
@@ -11,6 +12,8 @@ interface HeroProps {
 }
 
 export default function Hero({ about, photoFallback }: HeroProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="max-w-4xl mx-auto px-6 relative">
       
@@ -51,27 +54,27 @@ export default function Hero({ about, photoFallback }: HeroProps) {
 
       <div className="flex justify-center mb-8">
         <span className="pill-tag inline-flex items-center gap-2">
-          <Cpu size={14} className="text-foreground/40" /> Développeur Fullstack
+          <Cpu size={14} className="text-foreground/40" /> {t.home.heroTag}
         </span>
       </div>
 
       <h1 className="mb-10 text-[clamp(44px,10vw,80px)] leading-[1.05] tracking-tight text-foreground font-serif">
-        Concevoir l'excellence <br /> numérique <span className="text-foreground/40 italic">par le code.</span>
+        {t.home.heroTitle1} <br /> {t.home.heroTitle2} <span className="text-foreground/40 italic">{t.home.heroTitle3}</span>
       </h1>
       
       <p className="font-body text-[18px] md:text-[22px] text-foreground/70 leading-relaxed max-w-2xl mx-auto mb-14 text-balance">
-        {about?.bio.split('.')[0]}. Je transforme des visions complexes en solutions logicielles élégantes et performantes.
+        {t.home.heroDesc1}.{t.home.heroDesc2}
       </p>
       
       <div className="flex flex-wrap justify-center gap-6">
         <Magnetic>
           <Link href="/projects" className="btn-primary group">
-            Mes projets <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            {t.home.myProjects} <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </Magnetic>
         <Magnetic>
           <Link href="/contact" className="btn-secondary flex items-center gap-2 group">
-            <Mail size={18} className="text-foreground/50 group-hover:text-foreground transition-colors" /> Contact
+            <Mail size={18} className="text-foreground/50 group-hover:text-foreground transition-colors" /> {t.home.contact}
           </Link>
         </Magnetic>
       </div>

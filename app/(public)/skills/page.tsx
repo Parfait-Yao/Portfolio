@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 import { Layout, Server, Database, Wrench, Cpu, CheckCircle2, ChevronRight } from "lucide-react"
 import Section from "@/components/public/Section"
 import Link from "next/link"
+import { cookies } from 'next/headers'
+import { translations } from '@/lib/translations'
 
 const getIcon = (cat: string) => {
   switch(cat) {
@@ -15,6 +17,10 @@ const getIcon = (cat: string) => {
 }
 
 export default async function SkillsPage() {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  const t = translations[locale];
+
   const skillsData = await prisma.skill.findMany({
     orderBy: { order: 'asc' }
   })
@@ -27,13 +33,13 @@ export default async function SkillsPage() {
       <Section className="pt-[140px] pb-[72px] md:pt-[180px] md:pb-[100px]">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
-            Expertise
+            {t.skillsPage.expertise}
           </span>
           <h1 className="mb-8 text-foreground">
-            Compétences <span className="text-foreground/50">techniques.</span>
+            {t.skillsPage.title1} <span className="text-foreground/50">{t.skillsPage.title2}</span>
           </h1>
           <p className="font-body text-[18px] text-foreground/70 leading-relaxed max-w-2xl">
-            Un aperçu de mon savoir-faire technique, de l'architecture d'interfaces haute performance à la gestion d'infrastructures serveurs sécurisées.
+            {t.skillsPage.description}
           </p>
         </div>
       </Section>
@@ -85,7 +91,7 @@ export default async function SkillsPage() {
           
           {skillsData.length === 0 && (
             <div className="py-20 text-center bg-card border border-dashed border-border rounded-3xl">
-              <p className="font-body text-foreground/40">Aucune compétence n'a été répertoriée.</p>
+              <p className="font-body text-foreground/40">{t.skillsPage.noSkills}</p>
             </div>
           )}
         </div>
@@ -95,10 +101,10 @@ export default async function SkillsPage() {
       <Section className="bg-primary text-primary-foreground rounded-[40px] mx-4 md:mx-10 mb-10 overflow-hidden text-center py-16">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-primary-foreground mb-10">
-            Expertise mise en <br /> <span className="text-primary-foreground/60 italic">pratique.</span>
+            {t.skillsPage.practiceTitle1} <br /> <span className="text-primary-foreground/60 italic">{t.skillsPage.practiceTitle2}</span>
           </h2>
           <Link href="/projects" className="bg-background text-foreground px-12 py-5 rounded-full font-jakarta font-bold hover:bg-muted transition-all inline-flex items-center gap-4 text-[16px] uppercase tracking-widest hover:scale-105 active:scale-95 shadow-xl">
-            Mes réalisations <ChevronRight size={20} strokeWidth={2.5} />
+            {t.skillsPage.myWork} <ChevronRight size={20} strokeWidth={2.5} />
           </Link>
         </div>
       </Section>

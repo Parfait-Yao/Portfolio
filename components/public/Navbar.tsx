@@ -4,16 +4,19 @@ import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/Button"
 import { ThemeToggle } from "@/components/ui/ThemeToggle"
-
-const navLinks = [
-  { name: "Accueil", href: "/" },
-  { name: "Projets", href: "/projects" },
-  { name: "Expériences", href: "/experience" },
-  { name: "Skills", href: "/skills" },
-]
+import { useLanguage } from '@/context/LanguageContext'
+import { Globe } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
+  const { language, setLanguage, t } = useLanguage()
+
+  const navLinks = [
+    { name: t.nav.home, href: "/" },
+    { name: t.nav.projects, href: "/projects" },
+    { name: t.nav.experience, href: "/experience" },
+    { name: t.nav.skills, href: "/skills" },
+  ]
 
   return (
     <header className="glass-nav fixed top-0 left-0 right-0 w-full z-[100] transition-colors duration-300">
@@ -54,10 +57,18 @@ export default function Navbar() {
 
         {/* Right: Actions */}
         <div className="flex-1 flex justify-end items-center gap-4">
+          <button
+            onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')}
+            className="flex items-center gap-1.5 text-xs font-bold w-[50px] justify-center uppercase tracking-widest text-foreground/70 hover:text-foreground transition-colors"
+            title={language === 'fr' ? 'Switch to English' : 'Passer en français'}
+          >
+            <Globe className="w-4 h-4" />
+            <span>{language === 'fr' ? 'FR' : 'EN'}</span>
+          </button>
           <ThemeToggle />
           <Link href="/contact" className="hidden sm:block">
             <Button variant="outline" size="sm" className="bg-primary text-primary-foreground hover:opacity-90 border-transparent text-[11px] font-bold uppercase tracking-widest px-6 h-10 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/10">
-              Contacter
+              {t.nav.contact}
             </Button>
           </Link>
         </div>
