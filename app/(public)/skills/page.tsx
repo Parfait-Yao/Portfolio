@@ -67,7 +67,7 @@ export default async function SkillsPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
-                    {catSkills.map((skill) => (
+                    {catSkills.map((skill: any) => (
                       <div key={skill.id} className="group">
                         <div className="flex justify-between items-center mb-3">
                           <span className="font-jakarta text-[14px] font-bold text-foreground flex items-center gap-2">
