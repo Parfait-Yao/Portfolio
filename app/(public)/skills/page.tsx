@@ -50,7 +50,7 @@ export default async function SkillsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border rounded-3xl overflow-hidden">
             {categories.map((cat) => {
               const Icon = getIcon(cat)
-              const catSkills = skillsData.filter(s => s.category === cat)
+              const catSkills = skillsData.filter((s: any) => s.category === cat)
               
               if (catSkills.length === 0) return null
 
