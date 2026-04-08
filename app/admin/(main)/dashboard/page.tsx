@@ -93,7 +93,7 @@ export default async function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8E8E4]">
-                {recentProjects.map((project) => (
+                {recentProjects.map((project: any) => (
                   <tr key={project.id} className="group hover:bg-[#F7F7F5] transition-colors">
                     <td className="py-5 px-8 font-body text-[15px] font-bold text-[#0A0A0A]">
                       {project.title}
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
                     </td>
                     <td className="py-5 px-8">
                       <div className="flex gap-1.5">
-                        {project.tags.slice(0, 2).map((tag, i) => (
+                        {project.tags.slice(0, 2).map((tag: any, i: number) => (
                           <span key={i} className="text-[10px] text-[#888888] font-bold uppercase tracking-widest border border-[#E8E8E4] px-1.5 py-0.5 rounded">
                             {tag}
                           </span>
@@ -129,7 +129,7 @@ export default async function DashboardPage() {
 
           <div className="space-y-6">
             {recentMessages.length > 0 ? (
-              recentMessages.map((msg) => (
+              recentMessages.map((msg: any) => (
                 <div key={msg.id} className="relative group">
                   <div className="flex justify-between items-start mb-2">
                     <h4 className={cn("font-body text-[14px] font-bold", !msg.read ? "text-[#0A0A0A]" : "text-[#888888]")}>{msg.name}</h4>
