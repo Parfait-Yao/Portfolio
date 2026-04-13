@@ -41,8 +41,8 @@ Ceci est le code source de mon portfolio personnel de développeur Fullstack. Ce
 
 1. **Cloner le repository**
 ```bash
-git clone https://github.com/votre-nom/portfolio.git
-cd portfolio
+git clone https://github.com/Parfait-Yao/Portfolio.git
+cd Portfolio
 ```
 
 2. **Installer les dépendances**
