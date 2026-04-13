@@ -130,18 +130,18 @@ export default function ProjectForm({ project, isOpen, onClose, onSuccess }: Pro
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 bg-white/20 backdrop-blur-md overflow-hidden">
-      <div className="bg-white border border-[#E8E8E4] rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 bg-card/20 backdrop-blur-md overflow-hidden">
+      <div className="bg-card border border-border rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
         
         {/* Header */}
-        <div className="h-[80px] border-b border-[#E8E8E4] px-8 flex items-center justify-between bg-[#F7F7F5]/30 shrink-0">
+        <div className="h-[80px] border-b border-border px-8 flex items-center justify-between bg-muted/30 shrink-0">
            <div className="flex items-center gap-3">
-             <Layout size={18} className="text-[#0A0A0A]" />
-             <h2 className="font-display text-xl text-[#0A0A0A]">
+             <Layout size={18} className="text-foreground" />
+             <h2 className="font-display text-xl text-foreground">
                {project ? "Configuration Archive." : "Nouvelle Entrée."}
              </h2>
            </div>
-           <button onClick={onClose} className="w-10 h-10 rounded-full hover:bg-[#F7F7F5] flex items-center justify-center text-[#888888] hover:text-[#0A0A0A] transition-colors">
+           <button onClick={onClose} className="w-10 h-10 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
              <X size={20} />
            </button>
         </div>
@@ -151,46 +151,46 @@ export default function ProjectForm({ project, isOpen, onClose, onSuccess }: Pro
             
             {/* Primary Info section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-2 font-body text-[11px] font-bold text-[#888888] uppercase tracking-[0.2em] mb-4 border-b border-[#F0F0EE] pb-2">
+              <div className="flex items-center gap-2 font-body text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 border-b border-border/50 pb-2">
                 <Type size={12} /> Informations Générales
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Nom du projet</label>
+                  <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Nom du projet</label>
                   <input 
                     {...register("title")} 
-                    className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                     placeholder="ex: Portfolio V3"
                   />
                   {errors.title && <p className="text-red-600 text-[10px] font-bold">{errors.title.message}</p>}
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Stack (Tags)</label>
+                  <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Stack (Tags)</label>
                   <input 
                     {...register("tags")} 
-                    className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                     placeholder="React, Next.js, Prisma..."
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Accroche (Courte)</label>
+                <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Accroche (Courte)</label>
                 <input 
                   {...register("description")} 
-                  className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                  className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                   placeholder="Une phrase d'introduction marquante"
                 />
                 {errors.description && <p className="text-red-600 text-[10px] font-bold">{errors.description.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Case Study (Longue)</label>
+                <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Case Study (Longue)</label>
                 <textarea 
                   {...register("longDesc")} 
-                  className="w-full min-h-[150px] bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl p-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors resize-none leading-relaxed"
+                  className="w-full min-h-[150px] bg-muted border border-border rounded-xl p-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors resize-none leading-relaxed"
                   placeholder="Détails techniques, défis et solutions..."
                 />
               </div>
@@ -198,19 +198,19 @@ export default function ProjectForm({ project, isOpen, onClose, onSuccess }: Pro
 
             {/* Media section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-2 font-body text-[11px] font-bold text-[#888888] uppercase tracking-[0.2em] mb-4 border-b border-[#F0F0EE] pb-2">
+              <div className="flex items-center gap-2 font-body text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 border-b border-border/50 pb-2">
                 <Layers size={12} /> Médias & Visuels
               </div>
               
               <div className="flex flex-col md:flex-row items-start gap-8">
-                <div className="relative w-full md:w-48 h-32 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl overflow-hidden flex items-center justify-center grayscale group-hover:grayscale-0 transition-all shrink-0">
+                <div className="relative w-full md:w-48 h-32 bg-muted border border-border rounded-xl overflow-hidden flex items-center justify-center grayscale group-hover:grayscale-0 transition-all shrink-0">
                   {watch("imageUrl") ? (
                     <>
                       <img src={watch("imageUrl")} alt="Preview" className="w-full h-full object-cover" />
                       <button 
                         type="button" 
                         onClick={() => setValue("imageUrl", "")}
-                        className="absolute top-2 right-2 w-8 h-8 bg-[#0A0A0A] text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
+                        className="absolute top-2 right-2 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -222,20 +222,20 @@ export default function ProjectForm({ project, isOpen, onClose, onSuccess }: Pro
                     </div>
                   )}
                   {uploading && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-[#0A0A0A] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 bg-card/60 backdrop-blur-sm flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   )}
                 </div>
                 
                 <div className="flex-1 space-y-4">
-                  <p className="font-body text-[13px] text-[#888888] leading-relaxed">
+                  <p className="font-body text-[13px] text-muted-foreground leading-relaxed">
                     Ajoutez une capture d'écran haute résolution pour présenter votre travail sous son meilleur jour. Format recommandé : 16:9.
                   </p>
                   <button 
                     type="button"
                     onClick={() => document.getElementById("img-upload")?.click()}
-                    className="bg-white border border-[#0A0A0A] text-[#0A0A0A] h-12 px-8 rounded-full font-body font-bold text-[12px] uppercase tracking-widest hover:bg-[#0A0A0A] hover:text-white transition-all disabled:opacity-50"
+                    className="bg-card border border-primary text-foreground h-12 px-8 rounded-full font-body font-bold text-[12px] uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-50"
                     disabled={uploading}
                   >
                     {uploading ? "Traitement..." : "Charger un média"}
@@ -247,61 +247,61 @@ export default function ProjectForm({ project, isOpen, onClose, onSuccess }: Pro
 
             {/* Links section */}
             <section className="space-y-6">
-              <div className="flex items-center gap-2 font-body text-[11px] font-bold text-[#888888] uppercase tracking-[0.2em] mb-4 border-b border-[#F0F0EE] pb-2">
+              <div className="flex items-center gap-2 font-body text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 border-b border-border/50 pb-2">
                 <Code size={12} /> Connexions Externes
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Repository (Git)</label>
+                  <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Repository (Git)</label>
                   <div className="relative">
                     <GitBranch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B0B0B0]" size={16} />
-                    <input {...register("githubUrl")} className="w-full pl-12 pr-4 h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors" />
+                    <input {...register("githubUrl")} className="w-full pl-12 pr-4 h-12 bg-muted border border-border rounded-xl font-body text-[14px] focus:outline-none focus:border-primary transition-colors" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Lien Live / Démo</label>
+                  <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Lien Live / Démo</label>
                   <div className="relative">
                     <ExternalLink className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B0B0B0]" size={16} />
-                    <input {...register("liveUrl")} className="w-full pl-12 pr-4 h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors" />
+                    <input {...register("liveUrl")} className="w-full pl-12 pr-4 h-12 bg-muted border border-border rounded-xl font-body text-[14px] focus:outline-none focus:border-primary transition-colors" />
                   </div>
                 </div>
               </div>
             </section>
 
             {/* Config & Status */}
-            <section className="pt-6 border-t border-[#E8E8E4] flex flex-wrap items-center justify-between gap-8">
+            <section className="pt-6 border-t border-border flex flex-wrap items-center justify-between gap-8">
                <div className="flex items-center gap-6">
                  <label className="flex items-center gap-3 cursor-pointer group">
                    <div className="relative">
                      <input type="checkbox" {...register("featured")} className="peer sr-only" />
-                     <div className="w-10 h-5 bg-[#E8E8E4] rounded-full peer-checked:bg-[#0A0A0A] transition-colors"></div>
-                     <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                     <div className="w-10 h-5 bg-[#E8E8E4] rounded-full peer-checked:bg-primary transition-colors"></div>
+                     <div className="absolute left-1 top-1 w-3 h-3 bg-card rounded-full transition-transform peer-checked:translate-x-5"></div>
                    </div>
-                   <span className="font-body text-[13px] font-bold text-[#0A0A0A] uppercase tracking-widest">Mise en avant</span>
+                   <span className="font-body text-[13px] font-bold text-foreground uppercase tracking-widest">Mise en avant</span>
                  </label>
                </div>
                
                <div className="flex items-center gap-3 ml-auto">
-                 <label className="font-body text-[11px] font-bold text-[#888888] uppercase tracking-widest">Priorité</label>
-                 <input type="number" {...register("order", { valueAsNumber: true })} className="w-20 h-10 bg-[#F7F7F5] border border-[#E8E8E4] rounded-lg text-center font-body text-[14px]" />
+                 <label className="font-body text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Priorité</label>
+                 <input type="number" {...register("order", { valueAsNumber: true })} className="w-20 h-10 bg-muted border border-border rounded-lg text-center font-body text-[14px]" />
                </div>
             </section>
 
           </div>
 
-          <div className="p-8 border-t border-[#E8E8E4] flex flex-col md:flex-row gap-4 items-center justify-between bg-[#F7F7F5]/30 sticky bottom-0">
+          <div className="p-8 border-t border-border flex flex-col md:flex-row gap-4 items-center justify-between bg-muted/30 sticky bottom-0">
             <button 
               type="button"
               onClick={onClose}
-              className="font-body text-[13px] font-bold text-[#888888] hover:text-[#0A0A0A] uppercase tracking-widest transition-colors"
+              className="font-body text-[13px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-widest transition-colors"
             >
               Annuler
             </button>
             <button 
               type="submit" 
               disabled={loading}
-              className="bg-[#0A0A0A] text-white px-12 py-4 rounded-full font-body font-bold text-[13px] uppercase tracking-widest hover:bg-[#333] transition-colors flex items-center gap-3 disabled:opacity-50 w-full md:w-auto justify-center"
+              className="bg-primary text-primary-foreground px-12 py-4 rounded-full font-body font-bold text-[13px] uppercase tracking-widest hover:bg-primary/80 transition-colors flex items-center gap-3 disabled:opacity-50 w-full md:w-auto justify-center"
             >
               {loading ? "Traitement..." : <>{project ? "Mettre à jour" : "Lancer l'archive"} <ArrowRight size={16} /></>}
             </button>

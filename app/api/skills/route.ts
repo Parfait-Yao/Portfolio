@@ -1,12 +1,12 @@
 import { auth } from "@/lib/auth"
-import { neon } from "@neondatabase/serverless"
+import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-
-const sql = neon(process.env.DATABASE_URL!)
 
 export async function GET() {
   try {
-    const skills = await sql`SELECT * FROM "Skill" ORDER BY "order" ASC`
+    const skills = await prisma.skill.findMany({
+      orderBy: { order: 'asc' }
+    })
     return NextResponse.json(skills)
   } catch (error) {
     console.error("[SKILLS_GET]", error)
@@ -20,12 +20,16 @@ export async function POST(req: Request) {
 
   try {
     const data = await req.json()
-    const res = await sql`
-      INSERT INTO "Skill" (name, level, category, icon, "order")
-      VALUES (${data.name}, ${data.level}, ${data.category}, ${data.icon}, ${data.order})
-      RETURNING *
-    `
-    return NextResponse.json(res[0])
+    const skill = await prisma.skill.create({
+      data: {
+        name: data.name,
+        level: data.level,
+        category: data.category,
+        icon: data.icon,
+        order: data.order
+      }
+    })
+    return NextResponse.json(skill)
   } catch (error) {
     console.error("[SKILLS_POST]", error)
     return NextResponse.json({ error: "Failed to create skill" }, { status: 500 })

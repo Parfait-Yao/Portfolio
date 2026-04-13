@@ -13,7 +13,7 @@ export default async function AdminLayout({
   // Removing redundant check to avoid redirect loops on /admin/login
 
   return (
-    <div className="flex min-h-screen bg-white font-body selection:bg-[#0A0A0A] selection:text-white">
+    <div className="flex min-h-screen bg-card font-body selection:bg-primary selection:text-primary-foreground">
       {/* Sidebar - Desktop */}
       <div className="hidden lg:block">
         <AdminSidebar />

@@ -94,18 +94,18 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 bg-white/20 backdrop-blur-md overflow-hidden">
-      <div className="bg-white border border-[#E8E8E4] rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 bg-card/20 backdrop-blur-md overflow-hidden">
+      <div className="bg-card border border-border rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
         
         {/* Header */}
-        <div className="h-[80px] border-b border-[#E8E8E4] px-8 flex items-center justify-between bg-[#F7F7F5]/30 shrink-0">
+        <div className="h-[80px] border-b border-border px-8 flex items-center justify-between bg-muted/30 shrink-0">
            <div className="flex items-center gap-3">
-             <Briefcase size={18} className="text-[#0A0A0A]" />
-             <h2 className="font-display text-xl text-[#0A0A0A]">
+             <Briefcase size={18} className="text-foreground" />
+             <h2 className="font-display text-xl text-foreground">
                {experience ? "Modifier l'Expérience." : "Nouvelle Expérience."}
              </h2>
            </div>
-           <button onClick={onClose} className="w-10 h-10 rounded-full hover:bg-[#F7F7F5] flex items-center justify-center text-[#888888] hover:text-[#0A0A0A] transition-colors">
+           <button onClick={onClose} className="w-10 h-10 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
              <X size={20} />
            </button>
         </div>
@@ -115,20 +115,20 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Poste / Rôle</label>
+                <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Poste / Rôle</label>
                 <input 
                   {...register("role")} 
-                  className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                  className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                   placeholder="ex: Développeur Fullstack"
                 />
                 {errors.role && <p className="text-red-600 text-[10px] font-bold">{errors.role.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Entreprise</label>
+                <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Entreprise</label>
                 <input 
                   {...register("company")} 
-                  className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                  className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                   placeholder="ex: Tech Solutions Inc."
                 />
                 {errors.company && <p className="text-red-600 text-[10px] font-bold">{errors.company.message}</p>}
@@ -136,12 +136,12 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
             </div>
 
             <div className="space-y-2">
-              <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Localisation</label>
+              <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Localisation</label>
               <div className="relative">
                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B0B0B0]" size={16} />
                 <input 
                   {...register("location")} 
-                  className="w-full pl-12 pr-4 h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                  className="w-full pl-12 pr-4 h-12 bg-muted border border-border rounded-xl font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                   placeholder="ex: Paris / Remote"
                 />
               </div>
@@ -149,21 +149,21 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Date de début</label>
+                <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Date de début</label>
                 <input 
                   type="date"
                   {...register("startDate")} 
-                  className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                  className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Date de fin</label>
+                <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Date de fin</label>
                 <input 
                   type="date"
                   {...register("endDate")} 
                   disabled={isCurrent}
-                  className="w-full h-12 bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors disabled:opacity-30"
+                  className="w-full h-12 bg-muted border border-border rounded-xl px-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors disabled:opacity-30"
                 />
               </div>
             </div>
@@ -172,23 +172,23 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
               <label className="flex items-center gap-3 cursor-pointer group">
                 <div className="relative">
                   <input type="checkbox" {...register("current")} className="peer sr-only" />
-                  <div className="w-10 h-5 bg-[#E8E8E4] rounded-full peer-checked:bg-[#0A0A0A] transition-colors"></div>
-                  <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                  <div className="w-10 h-5 bg-[#E8E8E4] rounded-full peer-checked:bg-primary transition-colors"></div>
+                  <div className="absolute left-1 top-1 w-3 h-3 bg-card rounded-full transition-transform peer-checked:translate-x-5"></div>
                 </div>
-                <span className="font-body text-[13px] font-bold text-[#0A0A0A] uppercase tracking-widest">Poste actuel</span>
+                <span className="font-body text-[13px] font-bold text-foreground uppercase tracking-widest">Poste actuel</span>
               </label>
               
               <div className="flex items-center gap-3 ml-auto">
-                <label className="font-body text-[11px] font-bold text-[#888888] uppercase tracking-widest">Priorité</label>
-                <input type="number" {...register("order", { valueAsNumber: true })} className="w-20 h-10 bg-[#F7F7F5] border border-[#E8E8E4] rounded-lg text-center font-body text-[14px]" />
+                <label className="font-body text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Priorité</label>
+                <input type="number" {...register("order", { valueAsNumber: true })} className="w-20 h-10 bg-muted border border-border rounded-lg text-center font-body text-[14px]" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="font-body text-[11px] font-bold text-[#3D3D3A] uppercase tracking-widest ml-1">Missions & Réalisations</label>
+              <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Missions & Réalisations</label>
               <textarea 
                 {...register("description")} 
-                className="w-full min-h-[150px] bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl p-5 font-body text-[14px] focus:outline-none focus:border-[#0A0A0A] transition-colors resize-none leading-relaxed"
+                className="w-full min-h-[150px] bg-muted border border-border rounded-xl p-5 font-body text-[14px] focus:outline-none focus:border-primary transition-colors resize-none leading-relaxed"
                 placeholder="Décrivez vos responsabilités et succès..."
               />
               {errors.description && <p className="text-red-600 text-[10px] font-bold">{errors.description.message}</p>}
@@ -196,18 +196,18 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
 
           </div>
 
-          <div className="p-8 border-t border-[#E8E8E4] flex flex-col md:flex-row gap-4 items-center justify-between bg-[#F7F7F5]/30 sticky bottom-0">
+          <div className="p-8 border-t border-border flex flex-col md:flex-row gap-4 items-center justify-between bg-muted/30 sticky bottom-0">
             <button 
               type="button"
               onClick={onClose}
-              className="font-body text-[13px] font-bold text-[#888888] hover:text-[#0A0A0A] uppercase tracking-widest transition-colors"
+              className="font-body text-[13px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-widest transition-colors"
             >
               Annuler
             </button>
             <button 
               type="submit" 
               disabled={loading}
-              className="bg-[#0A0A0A] text-white px-12 py-4 rounded-full font-body font-bold text-[13px] uppercase tracking-widest hover:bg-[#333] transition-colors flex items-center gap-3 disabled:opacity-50 w-full md:w-auto justify-center"
+              className="bg-primary text-primary-foreground px-12 py-4 rounded-full font-body font-bold text-[13px] uppercase tracking-widest hover:bg-primary/80 transition-colors flex items-center gap-3 disabled:opacity-50 w-full md:w-auto justify-center"
             >
               {loading ? "Chargement..." : <>{experience ? "Mettre à jour" : "Ajouter au profil"} <ArrowRight size={16} /></>}
             </button>

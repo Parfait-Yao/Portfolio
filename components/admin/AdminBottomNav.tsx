@@ -17,7 +17,7 @@ export default function AdminBottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-[#E8E8E4] pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-xl border-t border-border pb-safe">
       <div className="flex items-stretch justify-around h-16">
         {adminNavItems.map((item) => {
           const isActive = pathname.startsWith(item.href)
@@ -27,7 +27,7 @@ export default function AdminBottomNav() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center justify-center flex-1 transition-all duration-300",
-                isActive ? "text-[#0A0A0A]" : "text-[#888888] hover:text-[#0A0A0A]"
+                isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <item.icon 

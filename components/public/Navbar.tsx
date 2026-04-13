@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/Button"
 import { ThemeToggle } from "@/components/ui/ThemeToggle"
 import { useLanguage } from '@/context/LanguageContext'
-import { Globe } from 'lucide-react'
+import { Globe, Lock } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -66,6 +66,9 @@ export default function Navbar() {
             <span>{language === 'fr' ? 'FR' : 'EN'}</span>
           </button>
           <ThemeToggle />
+          <Link href="/admin" className="p-2 text-foreground/70 hover:text-foreground transition-all duration-300 hover:scale-110" title="Admin">
+            <Lock className="w-4 h-4" />
+          </Link>
           <Link href="/contact" className="hidden sm:block">
             <Button variant="outline" size="sm" className="bg-primary text-primary-foreground hover:opacity-90 border-transparent text-[11px] font-bold uppercase tracking-widest px-6 h-10 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/10">
               {t.nav.contact}

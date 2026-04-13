@@ -6,7 +6,7 @@ export default function RootAdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-[#F7F7F5] selection:bg-[#0A0A0A] selection:text-white">
+    <div className="min-h-screen bg-muted selection:bg-primary selection:text-primary-foreground">
       {children}
     </div>
   )
