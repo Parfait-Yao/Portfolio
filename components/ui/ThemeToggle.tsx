@@ -11,11 +11,33 @@ export function ThemeToggle() {
   const { color, setColor } = useColor()
   const [mounted, setMounted] = React.useState(false)
   const [open, setOpen] = React.useState(false)
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   // Avoid hydration mismatch
   React.useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    if (!open) return
+
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    // Use a small delay so the opening click doesn't immediately close it
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside)
+    }, 0)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [open])
 
   if (!mounted) {
     return (
@@ -32,11 +54,10 @@ export function ThemeToggle() {
   }
 
   return (
-    <div className="relative" onMouseLeave={() => setOpen(false)}>
+    <div className="relative" ref={containerRef}>
       <Button
         variant="ghost"
         size="icon"
-        onMouseEnter={() => setOpen(true)}
         onClick={() => setOpen(!open)}
         className={`w-10 h-10 rounded-full transition-all ${open ? 'bg-primary text-primary-foreground' : 'bg-pill hover:bg-foreground/10 text-foreground'}`}
       >
@@ -89,4 +110,3 @@ export function ThemeToggle() {
     </div>
   )
 }
-
