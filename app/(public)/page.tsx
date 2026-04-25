@@ -21,7 +21,8 @@ import {
   Smartphone,
   Globe
 } from "lucide-react"
-import ProjectCard from "@/components/public/ProjectCard"
+import IcyProjectCard from "@/components/public/IcyProjectCard"
+import ExperienceCard from "@/components/public/ExperienceCard"
 import Section from "@/components/public/Section"
 import TechCell from "@/components/public/TechCell"
 import Magnetic from "@/components/public/Magnetic"
@@ -48,6 +49,26 @@ export default async function Home() {
   const t = translations[locale];
 
   const about = await prisma.about.findFirst()
+  let latestExperience = await prisma.experience.findFirst({
+    orderBy: { startDate: 'desc' }
+  })
+
+  // Fallback for preview
+  if (!latestExperience) {
+    latestExperience = {
+      id: 'preview-1',
+      role: 'Lead Développeur Fullstack',
+      company: 'Digital Vision Corp',
+      location: 'Paris / Remote',
+      startDate: new Date('2022-03-01'),
+      endDate: null,
+      current: true,
+      description: "Direction technique d'une équipe de 8 développeurs sur la refonte complète de l'écosystème e-commerce.",
+      imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
+      likes: 42
+    } as any
+  }
+
   let featuredProjects = await prisma.project.findMany({
     where: { featured: true },
     orderBy: { order: 'asc' },
@@ -61,7 +82,7 @@ export default async function Home() {
     });
   }
 
-  // Fallback to placeholder data if the database is completely empty so the UI doesn't break
+  // Fallback to placeholder data
   if (featuredProjects.length === 0) {
     featuredProjects = [
       {
@@ -99,10 +120,27 @@ export default async function Home() {
           about={about} 
           photoFallback="/profile_placeholder.png" 
         />
-
       </Section>
 
-      {/* Trusted Partners / Ecosystem Bar */}
+      {/* Dynamic Experience Preview Section [NEW] */}
+      {latestExperience && (
+        <Section className="pb-24">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="flex flex-col items-center text-center mb-12">
+               <span className="pill-tag mb-4">Dernier Challenge</span>
+               <h2 className="text-3xl font-display font-bold">Expérience <span className="text-muted-foreground">Récente.</span></h2>
+            </div>
+            <ExperienceCard experience={latestExperience} />
+            <div className="mt-8 flex justify-center">
+               <Link href="/experience" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  Voir tout mon parcours <ChevronRight size={14} />
+               </Link>
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {/* Ecosystem Bar */}
       <section className="py-12 border-y border-border/50 bg-background transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6 overflow-hidden">
           <p className="text-center text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/30 mb-8">
@@ -159,9 +197,9 @@ export default async function Home() {
             {t.home.featuredTag}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 mb-16 w-full text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 mb-16 w-full text-left items-stretch">
             {featuredProjects.map((project: any) => (
-              <ProjectCard key={project.id} project={project} />
+              <IcyProjectCard key={project.id} project={project} />
             ))}
           </div>
           
@@ -202,14 +240,22 @@ export default async function Home() {
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           
           {/* Image Side */}
-          <div className="relative aspect-[4/5] rounded-[28px] overflow-hidden bg-muted border border-border group transition-all duration-300">
-             <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity duration-700">
-               <span className="font-serif text-5xl italic text-foreground/20" dangerouslySetInnerHTML={{ __html: `${t.home.artisanal} <br /> ${t.home.digital}` }}></span>
+          <div className="relative aspect-[16/10] lg:aspect-[4/5] rounded-[28px] overflow-hidden bg-muted border border-border group transition-all duration-300 shadow-2xl">
+             <img 
+               src="/methodology_process_photo_1777160679780.png" 
+               alt="Methodology" 
+               className="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-700" />
+             
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+               <span className="font-serif text-5xl md:text-6xl italic text-white/40 drop-shadow-lg text-center leading-tight" dangerouslySetInnerHTML={{ __html: `${t.home.artisanal} <br /> ${t.home.digital}` }}></span>
              </div>
+             
              {/* Decorative Elements */}
-             <div className="absolute bottom-8 left-8 right-8 p-6 bg-background/20 backdrop-blur-md rounded-2xl border border-border/20 transition-colors duration-300">
-               <p className="text-foreground font-jakarta font-bold text-lg">{t.home.qualityPerf}</p>
-               <p className="text-foreground/60 text-sm">{t.home.commitment}</p>
+             <div className="absolute bottom-8 left-8 right-8 p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 transition-all duration-500 group-hover:bg-white/20">
+               <p className="text-white font-jakarta font-bold text-lg">{t.home.qualityPerf}</p>
+               <p className="text-white/70 text-sm">{t.home.commitment}</p>
              </div>
           </div>
 
@@ -264,9 +310,8 @@ export default async function Home() {
         </div>
       </Section>
 
-      {/* CTA Section */}
       <Section className="bg-primary text-background rounded-[48px] mx-4 md:mx-10 mb-10 overflow-hidden shadow-2xl transition-colors duration-300">
-        <div className="max-w-4xl mx-auto px-6 py-20 text-center relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-6 py-10 text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-background/10 to-transparent opacity-20 pointer-events-none" />
           
           <h2 className="text-primary-foreground mb-12 text-[clamp(32px,6vw,56px)] leading-none" dangerouslySetInnerHTML={{ __html: `${t.home.readyToStart} <br /> <span class="text-primary-foreground/50 italic">${t.home.readyToStartSub}</span>` }}>

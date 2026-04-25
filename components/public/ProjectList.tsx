@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import ModernProjectCard from './ModernProjectCard'
+import IcyProjectCard from './IcyProjectCard'
 
 export default function ProjectList({ initialProjects }: { initialProjects: any[] }) {
   const [visibleCount, setVisibleCount] = useState(3)
@@ -14,7 +14,7 @@ export default function ProjectList({ initialProjects }: { initialProjects: any[
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {initialProjects.slice(0, visibleCount).map((project) => (
-          <ModernProjectCard key={project.id} project={project} />
+          <IcyProjectCard key={project.id} project={project} />
         ))}
       </div>
       

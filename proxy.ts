@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 
-export default auth((req) => {
+export const proxy = auth((req) => {
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
   const isLoginPage = req.nextUrl.pathname === '/admin/login'
   

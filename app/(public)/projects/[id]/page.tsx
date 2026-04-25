@@ -101,9 +101,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   href={project.githubUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="border border-border text-foreground px-8 py-4 rounded-full font-body font-medium hover:bg-muted transition-colors flex items-center justify-center gap-3 text-sm"
+                  className="border border-primary/40 text-primary px-8 py-4 rounded-full font-body font-bold hover:bg-primary/5 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest"
                 >
-                  Code source via Github <FaGithub size={14} />
+                  Code source via Github <FaGithub size={16} />
                 </a>
               )}
             </div>

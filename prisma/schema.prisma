@@ -40,6 +40,8 @@ model Experience {
   description String    @db.Text
   location    String?
   order       Int       @default(0)
+  imageUrl    String?
+  likes       Int       @default(0)
 }
 
 model Education {

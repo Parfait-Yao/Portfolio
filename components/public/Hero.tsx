@@ -36,13 +36,13 @@ export default function Hero({ about, photoFallback }: HeroProps) {
           
           {/* Floating Badge */}
           <motion.div 
-            initial={{ opacity: 0, x: -10, y: 10 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="absolute -right-12 bottom-4 z-20"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="absolute -right-8 -bottom-2 z-20"
           >
-            <div className="bg-card border border-border shadow-lg rounded-full py-2 px-4 flex items-center gap-2 whitespace-nowrap">
-              <span className="text-[12px] font-bold text-foreground">Parfait Eric</span>
+            <div className="bg-background/80 backdrop-blur-md border border-border shadow-2xl rounded-full py-1.5 px-3 flex items-center gap-2 whitespace-nowrap scale-90 md:scale-100">
+              <span className="text-[11px] font-bold text-foreground tracking-tight">Parfait Eric</span>
               <span className="text-[12px]">🤘</span>
             </div>
           </motion.div>

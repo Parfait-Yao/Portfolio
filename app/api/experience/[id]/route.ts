@@ -22,7 +22,9 @@ export async function PUT(
         current: data.current,
         description: data.description,
         location: data.location,
-        order: data.order
+        order: data.order,
+        imageUrl: data.imageUrl,
+        likes: data.likes || 0,
       }
     })
     return NextResponse.json(experience)

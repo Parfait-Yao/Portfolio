@@ -23,6 +23,8 @@ const schema = z.object({
   endDate: z.string().optional().nullable(),
   current: z.boolean(),
   order: z.number(),
+  imageUrl: z.string().optional(),
+  likes: z.number().default(0),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -36,8 +38,9 @@ interface ExperienceFormProps {
 
 export default function ExperienceForm({ experience, isOpen, onClose, onSuccess }: ExperienceFormProps) {
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: experience ? {
       role: experience.role || "",
@@ -48,6 +51,8 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
       endDate: experience.endDate ? new Date(experience.endDate).toISOString().split('T')[0] : "",
       current: experience.current || false,
       order: experience.order || 0,
+      imageUrl: experience.imageUrl || "",
+      likes: experience.likes || 0,
     } : {
       role: "",
       company: "",
@@ -57,10 +62,39 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
       endDate: "",
       current: false,
       order: 0,
+      imageUrl: "",
+      likes: 0,
     }
   })
 
   const isCurrent = watch("current")
+  const imageUrl = watch("imageUrl")
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onloadend = async () => {
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: JSON.stringify({ image: reader.result }),
+        })
+        const data = await res.json()
+        if (data.url) {
+          setValue("imageUrl", data.url)
+          toast.success("Média synchronisé")
+        }
+      } catch (error) {
+        toast.error("Échec de l'upload")
+      } finally {
+        setUploading(false)
+      }
+    }
+  }
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true)
@@ -113,6 +147,50 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto custom-scrollbar">
           <div className="p-8 md:p-10 space-y-8">
             
+            {/* Image Upload Section */}
+            <div className="space-y-4">
+              <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Photo symbolisant l'expérience</label>
+              <div className="flex items-center gap-6">
+                <div className="relative w-32 h-32 bg-muted border border-border rounded-2xl overflow-hidden flex items-center justify-center group">
+                  {imageUrl ? (
+                    <>
+                      <img src={imageUrl} alt="Experience Preview" className="w-full h-full object-cover" />
+                      <button 
+                        type="button" 
+                        onClick={() => setValue("imageUrl", "")}
+                        className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={20} className="text-white" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      {uploading ? (
+                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <>
+                          <Clock size={20} strokeWidth={1} />
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-center px-2">Ajouter Photo</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  <input 
+                    type="file" 
+                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                    onChange={handleImageUpload} 
+                    accept="image/*"
+                    disabled={uploading}
+                  />
+                </div>
+                <div className="flex-1 space-y-2">
+                  <p className="text-[12px] text-muted-foreground leading-relaxed">
+                    Une image aide à illustrer votre parcours (logo d'entreprise, photo de bureau, ou visuel symbolique).
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="font-body text-[11px] font-bold text-foreground/80 uppercase tracking-widest ml-1">Poste / Rôle</label>

@@ -1,22 +1,15 @@
 import React from "react"
 import { prisma } from "@/lib/prisma"
 import { 
-  Briefcase, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  ChevronRight, 
-  Zap, 
-  Cpu, 
-  Users, 
   GraduationCap, 
-  Award,
-  BookOpen,
+  Briefcase,
+  Cpu,
+  Zap,
   Rocket,
-  ShieldCheck,
-  Gem
+  ChevronRight
 } from "lucide-react"
 import Section from "@/components/public/Section"
+import ExperienceList from "@/components/public/ExperienceList"
 import Link from "next/link"
 import { cookies } from 'next/headers'
 import { translations } from '@/lib/translations'
@@ -26,211 +19,134 @@ export default async function ExperiencePage() {
   const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
   const t = translations[locale];
 
-  const experiences = await prisma.experience.findMany({
+  let experiences = await prisma.experience.findMany({
     orderBy: { startDate: 'desc' }
   })
+
+  // Fallback for preview if DB is empty
+  if (experiences.length === 0) {
+    experiences = [
+      {
+        id: 'preview-1',
+        role: 'Lead Développeur Fullstack',
+        company: 'Digital Vision Corp',
+        location: 'Paris / Remote',
+        startDate: new Date('2022-03-01'),
+        endDate: null,
+        current: true,
+        description: "Direction technique d'une équipe de 8 développeurs sur la refonte complète de l'écosystème e-commerce.",
+        imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop',
+        likes: 42
+      }
+    ] as any[]
+  }
 
   const education = await prisma.education.findMany({
     orderBy: { startDate: 'desc' }
   })
 
-  // Fallbacks for display
-  const displayExperiences = experiences.length > 0 ? experiences : [
-    {
-      id: 'd1',
-      role: 'Développeur Fullstack Senior',
-      company: 'Tech Innovate Studio',
-      description: 'Responsable de l\'architecture logicielle et de l\'optimisation des performances pour des plateformes SaaS à fort trafic. Lead tech d\'une équipe de 5 développeurs.',
-      location: 'Abidjan / Remote',
-      startDate: new Date('2022-01-01'),
-      endDate: null,
-      current: true
-    },
-    {
-      id: 'd2',
-      role: 'Développeur Frontend Web3',
-      company: 'CryptoPulse Inc.',
-      description: 'Développement d\'interfaces interactives et décentralisées. Utilisation poussée de Next.js et de librairies de visualisation de données.',
-      location: 'Paris / Remote',
-      startDate: new Date('2020-06-01'),
-      endDate: new Date('2021-12-01'),
-      current: false
-    }
-  ]
-
-  const displayEducation = education.length > 0 ? education : [
-    {
-       id: 'e1',
-       school: 'École Polytechnique',
-       degree: 'Master en Ingénierie Logicielle',
-       field: 'Computer Science',
-       startDate: new Date('2018-09-01'),
-       endDate: new Date('2020-07-01'),
-       description: 'Spécialisation en systèmes distribués et intelligence artificielle.'
-    }
-  ]
-
   return (
-    <div className="bg-background min-h-screen selection:bg-primary selection:text-primary-foreground">
+    <div className="bg-background min-h-screen pb-20">
       
-      {/* 1. HERO SECTION - CHARACTER + TEXT */}
-      <Section className="pt-[140px] pb-[80px] md:pt-[180px] md:pb-[100px]">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="relative order-2 lg:order-1">
-             <img src="/images/characters/hero.png" alt="Developer Character" className="w-full h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
-          </div>
-          <div className="space-y-8 order-1 lg:order-2">
-            <span className="pill-tag bg-foreground/5 text-foreground/40 border-none px-4 py-2">{t.expPage.heroTag}</span>
-            <h1 className="text-[clamp(40px,6vw,80px)] leading-[1.05] tracking-tight text-foreground">
-              {t.expPage.heroTitle1} <span className="text-foreground/40">{t.expPage.heroTitle2}</span> <br /> 
-              <span className="italic">{t.expPage.heroTitle3}</span>
+      {/* Header Minimaliste */}
+      <Section className="pt-[140px] pb-[60px] md:pt-[180px] md:pb-[80px]">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="space-y-6">
+            <span className="pill-tag px-6 py-2 bg-primary/10 text-primary border-none text-[11px] font-bold uppercase tracking-[0.2em]">
+              Parcours & Expertise
+            </span>
+            <h1 className="text-[clamp(40px,6vw,72px)] leading-none font-display font-bold text-foreground">
+              Expériences <span className="text-muted-foreground">Professionnelles.</span>
             </h1>
-            <p className="font-body text-[18px] text-foreground/60 leading-relaxed max-w-xl">
-              {t.expPage.heroDesc}
+            <p className="font-body text-[18px] text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              Une rétrospective de mon évolution technique, des défis relevés et des projets menés à bien au sein de diverses structures.
             </p>
           </div>
         </div>
       </Section>
 
-      {/* 2. HIGHLIGHTS GRID (Small concepts) */}
-      <Section className="py-20 border-y border-border bg-background/50">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-20 text-center">
-           <div className="space-y-4">
-              <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                 <Zap className="text-black" size={28} />
-              </div>
-              <h3 className="font-jakarta font-bold text-lg uppercase tracking-wider">{t.expPage.concept1Title}</h3>
-              <p className="text-foreground/40 text-[14px]">{t.expPage.concept1Desc}</p>
-           </div>
-           <div className="space-y-4">
-              <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                 <Cpu className="text-black" size={28} />
-              </div>
-              <h3 className="font-jakarta font-bold text-lg uppercase tracking-wider">{t.expPage.concept2Title}</h3>
-              <p className="text-foreground/40 text-[14px]">{t.expPage.concept2Desc}</p>
-           </div>
-           <div className="space-y-4">
-              <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                 <Rocket className="text-black" size={28} />
-              </div>
-              <h3 className="font-jakarta font-bold text-lg uppercase tracking-wider">{t.expPage.concept3Title}</h3>
-              <p className="text-foreground/40 text-[14px]">{t.expPage.concept3Desc}</p>
-           </div>
-        </div>
-      </Section>
-
-      {/* 3. EXPERIENCE BLOCKS - ALTERNATING */}
-      <div className="space-y-0">
-        {displayExperiences.map((exp: any, index: number) => (
-          <Section 
-            key={exp.id} 
-            className={`py-[80px] md:py-[140px] ${index % 2 !== 0 ? 'bg-card' : 'bg-background'}`}
-          >
-            <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-               <div className={`space-y-8 ${index % 2 !== 0 ? 'lg:order-2' : 'lg:order-1'}`}>
-                  <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-foreground/5 rounded-2xl flex items-center justify-center">
-                        <Briefcase size={22} />
-                     </div>
-                     <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-foreground/30 uppercase">
-                        {new Date(exp.startDate).getFullYear()} — {exp.current ? t.expPage.present : exp.endDate ? new Date(exp.endDate).getFullYear() : ""}
-                     </span>
-                  </div>
-                  <h2 className="text-[42px] leading-tight font-serif italic text-foreground">
-                    {exp.role} <br />
-                    <span className="text-foreground/30 not-italic font-jakarta text-[24px] uppercase tracking-tighter align-middle ml-2">— {exp.company}</span>
-                  </h2>
-                  <p className="font-body text-[17px] text-foreground/60 leading-[1.8] max-w-xl">
-                    {exp.description}
-                  </p>
-                  <div className="flex items-center gap-6 text-[13px] font-bold text-foreground group">
-                     {exp.location} <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </div>
-               </div>
-               
-               <div className={`relative ${index % 2 !== 0 ? 'lg:order-1' : 'lg:order-2'}`}>
-                  {/* Each experience gets the dynamic rocket or team image based on order */}
-                  <img 
-                    src={index % 2 === 0 ? "/images/characters/rocket.png" : "/images/characters/team.png"} 
-                    alt="Development Stage" 
-                    className="w-full h-auto drop-shadow-3xl hover:translate-y-[-10px] transition-transform duration-700" 
-                  />
-               </div>
+      {/* Experience List Section */}
+      <Section className="pb-24">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-12">
+            <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <Briefcase size={20} />
             </div>
-          </Section>
-        ))}
-      </div>
-
-      {/* 4. KEY QUALITIES GRID (Second set of 3) */}
-      <Section className="py-20 border-y border-border bg-background/50">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-20 text-center">
-           <div className="space-y-4">
-              <div className="w-16 h-16 bg-foreground/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                 <ShieldCheck className="text-foreground" size={28} />
-              </div>
-              <h3 className="font-jakarta font-bold text-lg uppercase tracking-wider">{t.expPage.quality1Title}</h3>
-              <p className="text-foreground/40 text-[14px]">{t.expPage.quality1Desc}</p>
-           </div>
-           <div className="space-y-4">
-              <div className="w-16 h-16 bg-foreground/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                 <Users className="text-foreground" size={28} />
-              </div>
-              <h3 className="font-jakarta font-bold text-lg uppercase tracking-wider">{t.expPage.quality2Title}</h3>
-              <p className="text-foreground/40 text-[14px]">{t.expPage.quality2Desc}</p>
-           </div>
-           <div className="space-y-4">
-              <div className="w-16 h-16 bg-foreground/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                 <Gem className="text-foreground" size={28} />
-              </div>
-              <h3 className="font-jakarta font-bold text-lg uppercase tracking-wider">{t.expPage.quality3Title}</h3>
-              <p className="text-foreground/40 text-[14px]">{t.expPage.quality3Desc}</p>
-           </div>
+            <h2 className="text-2xl font-display font-bold uppercase tracking-tight">Chronologie Pro</h2>
+            <div className="flex-1 h-[1px] bg-border/50" />
+          </div>
+          
+          <ExperienceList experiences={experiences} />
         </div>
       </Section>
 
-      {/* 5. ACADEMIC BACKGROUND - FINAL ALTERNATING SECTION */}
-      <Section className="py-[120px] bg-background">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-           <div className="order-2 lg:order-1">
-              <img src="/images/characters/education.png" alt="Academic Background" className="w-full h-auto drop-shadow-2xl" />
-           </div>
-           <div className="order-1 lg:order-2 space-y-12">
-              <div>
-                <span className="pill-tag mb-6">{t.expPage.education}</span>
-                <h2 className="text-[56px] leading-[1.05] tracking-tight mb-8 text-foreground">{t.expPage.academicTitle1} <br /> <span className="text-foreground/40">{t.expPage.academicTitle2}</span></h2>
+      {/* Education Section - Plus compacte */}
+      <Section className="py-24 bg-muted/30 border-y border-border/50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-16 justify-center md:justify-start">
+            <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <GraduationCap size={20} />
+            </div>
+            <h2 className="text-2xl font-display font-bold uppercase tracking-tight">Formation Académique</h2>
+            <div className="hidden md:block flex-1 h-[1px] bg-border/50" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {education.map((edu: any) => (
+              <div key={edu.id} className="bg-card border border-border/50 p-8 rounded-[24px] hover:border-primary/20 transition-all">
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">
+                    {new Date(edu.startDate).getFullYear()} — {edu.endDate ? new Date(edu.endDate).getFullYear() : "Présent"}
+                  </span>
+                </div>
+                <h4 className="text-xl font-display font-bold mb-1">{edu.degree}</h4>
+                <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">{edu.school}</div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {edu.description}
+                </p>
               </div>
-              
-              <div className="space-y-12">
-                {displayEducation.map((edu: any) => (
-                  <div key={edu.id} className="group relative flex gap-8">
-                     <div className="w-14 h-14 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform">
-                        <GraduationCap size={28} />
-                     </div>
-                     <div>
-                        <div className="font-mono text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em] mb-2">
-                           {new Date(edu.startDate).getFullYear()} — {edu.endDate ? new Date(edu.endDate).getFullYear() : t.expPage.present}
-                        </div>
-                        <h4 className="font-serif text-2xl mb-1 text-black">{edu.degree}</h4>
-                        <div className="font-jakarta text-[14px] font-bold text-foreground/40 uppercase tracking-widest mb-4">{edu.school}</div>
-                        <p className="font-body text-foreground/60 leading-relaxed text-[15px] max-w-md">
-                           {edu.description}
-                        </p>
-                     </div>
-                  </div>
-                ))}
-              </div>
-           </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* Key Concepts - Mini Grid */}
+      <Section className="py-24">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="p-8 rounded-[32px] bg-card border border-border/40 text-center space-y-4">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-2">
+              <Zap size={24} />
+            </div>
+            <h3 className="font-bold uppercase tracking-widest text-sm">Performance</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">Optimisation constante des flux et des temps de réponse.</p>
+          </div>
+          <div className="p-8 rounded-[32px] bg-card border border-border/40 text-center space-y-4">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-2">
+              <Cpu size={24} />
+            </div>
+            <h3 className="font-bold uppercase tracking-widest text-sm">Architecture</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">Conception de systèmes robustes et scalables.</p>
+          </div>
+          <div className="p-8 rounded-[32px] bg-card border border-border/40 text-center space-y-4">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-2">
+              <Rocket size={24} />
+            </div>
+            <h3 className="font-bold uppercase tracking-widest text-sm">Innovation</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">Veille technologique et intégration de solutions modernes.</p>
+          </div>
         </div>
       </Section>
 
       {/* CTA Section */}
-      <Section className="bg-primary text-primary-foreground rounded-[40px] mx-4 md:mx-10 mb-10 overflow-hidden text-center py-24">
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <h2 className="text-primary-foreground mb-10 text-[64px] leading-tight tracking-tight">
-            {t.expPage.collaborate1} <br /> <span className="text-primary-foreground/60 italic">{t.expPage.collaborate2}</span>
+      <Section className="bg-primary text-background rounded-[48px] mx-4 md:mx-10 mb-10 overflow-hidden shadow-2xl transition-colors duration-300">
+        <div className="max-w-4xl mx-auto px-6 py-10 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-background/10 to-transparent opacity-20 pointer-events-none" />
+          
+          <h2 className="text-primary-foreground mb-8 text-[clamp(28px,5vw,48px)] leading-none">
+            {t.home.readyToStart} <br /> <span className="text-primary-foreground/50 italic">{t.home.readyToStartSub}</span>
           </h2>
-          <Link href="/contact" className="bg-background text-foreground px-12 py-5 rounded-full font-jakarta font-bold hover:bg-muted transition-all inline-flex items-center gap-4 text-[16px] uppercase tracking-widest hover:scale-105 active:scale-95 shadow-xl">
-            {t.expPage.startProject} <ChevronRight size={20} strokeWidth={2.5} />
+          <Link href="/contact" className="bg-background text-primary px-10 py-4 rounded-full font-bold hover:opacity-90 transition-all hover:scale-105 active:scale-95 inline-flex items-center gap-3 text-[15px] uppercase tracking-widest shadow-xl">
+             {t.home.contactUs} <ChevronRight size={18} strokeWidth={2.5} />
           </Link>
         </div>
       </Section>
