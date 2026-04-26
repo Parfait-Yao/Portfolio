@@ -8,13 +8,13 @@ neonConfig.webSocketConstructor = ws
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
 const createPrismaClient = () => {
-  const url = process.env.DATABASE_URL
+  // On vérifie DATABASE_URL mais aussi POSTGRES_URL (souvent utilisé par l'intégration Vercel)
+  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL
   
   if (!url) {
-    console.error("❌ CRITICAL: DATABASE_URL is missing in environment variables.")
-    // We return a disconnected PrismaClient to avoid crashing immediately,
-    // but queries will still fail.
-    return new PrismaClient()
+    console.error("❌ CRITICAL: No connection string found (DATABASE_URL or POSTGRES_URL).")
+    // Throwing a descriptive error instead of returning a broken client
+    throw new Error("Missing DATABASE_URL on Vercel. Please check your Environment Variables and ensure they are enabled for 'Preview' and 'Production'.")
   }
 
   try {
@@ -27,7 +27,7 @@ const createPrismaClient = () => {
     })
   } catch (error) {
     console.error("❌ Failed to initialize Prisma with Neon adapter:", error)
-    return new PrismaClient()
+    throw error
   }
 }
 
