@@ -1,26 +1,27 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function GET() {
   try {
+    const { prisma } = await import("@/lib/prisma")
     const skills = await prisma.skill.findMany({
       orderBy: { order: 'asc' }
     })
     return NextResponse.json(skills)
   } catch (error) {
-    console.error("[SKILLS_GET]", error)
-    return NextResponse.json({ error: "Failed to fetch skills" }, { status: 500 })
+    return NextResponse.json([])
   }
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const data = await req.json()
     const skill = await prisma.skill.create({
       data: {
@@ -33,7 +34,6 @@ export async function POST(req: Request) {
     })
     return NextResponse.json(skill)
   } catch (error) {
-    console.error("[SKILLS_POST]", error)
     return NextResponse.json({ error: "Failed to create skill" }, { status: 500 })
   }
 }

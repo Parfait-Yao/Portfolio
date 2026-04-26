@@ -1,14 +1,15 @@
-import { auth } from "@/lib/auth"
-import { uploadImage } from "@/lib/cloudinary"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { uploadImage } = await import("@/lib/cloudinary")
     const body = await req.json()
     const { image } = body
 

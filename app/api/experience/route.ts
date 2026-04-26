@@ -1,26 +1,27 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function GET() {
   try {
+    const { prisma } = await import("@/lib/prisma")
     const experiences = await prisma.experience.findMany({
       orderBy: { startDate: 'desc' }
     })
     return NextResponse.json(experiences)
   } catch (error) {
-    console.error("[EXPERIENCE_GET]", error)
-    return NextResponse.json({ error: "Failed to fetch experiences" }, { status: 500 })
+    return NextResponse.json([])
   }
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const data = await req.json()
     const experience = await prisma.experience.create({
       data: {
@@ -32,13 +33,12 @@ export async function POST(req: Request) {
         description: data.description,
         location: data.location,
         order: data.order,
-        likes: data.likes || 0,
         imageUrl: data.imageUrl,
+        likes: data.likes || 0,
       } as any
     })
     return NextResponse.json(experience)
   } catch (error) {
-    console.error("[EXPERIENCE_POST]", error)
     return NextResponse.json({ error: "Failed to create experience" }, { status: 500 })
   }
 }
