@@ -1,47 +1,31 @@
-import { Pool, neonConfig } from '@neondatabase/serverless'
+import { neonConfig } from '@neondatabase/serverless'
 import { PrismaNeon } from '@prisma/adapter-neon'
 import { PrismaClient } from '@prisma/client'
 import ws from 'ws'
 
 neonConfig.webSocketConstructor = ws
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
-
 const createPrismaClient = () => {
-  // On vérifie DATABASE_URL mais aussi POSTGRES_URL (souvent utilisé par l'intégration Vercel)
-  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL
-  
-  if (!url) {
-    console.error("❌ CRITICAL: No connection string found (DATABASE_URL or POSTGRES_URL).")
-    // Throwing a descriptive error instead of returning a broken client
-    throw new Error("Missing DATABASE_URL on Vercel. Please check your Environment Variables and ensure they are enabled for 'Preview' and 'Production'.")
+  const connectionString = process.env.DATABASE_URL
+
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is not set.')
   }
 
-  try {
-    const pool = new Pool({ connectionString: url })
-    const adapter = new PrismaNeon(pool as any)
+  // PrismaNeon v7 takes a PoolConfig object directly, not a Pool instance
+  const adapter = new PrismaNeon({ connectionString })
 
-    return new PrismaClient({
-      adapter,
-      log: ['error', 'warn'],
-    })
-  } catch (error) {
-    console.error("❌ Failed to initialize Prisma with Neon adapter:", error)
-    throw error
-  }
+  return new PrismaClient({
+    adapter,
+    log: ['error', 'warn'],
+  })
 }
 
-// On utilise un Proxy pour que 'prisma' ne soit initialisé 
-// QUE lorsqu'on essaie d'y accéder pour la première fois en production.
-export const prisma = new Proxy({} as PrismaClient, {
-  get(target, prop, receiver) {
-    if (!globalForPrisma.prisma) {
-      globalForPrisma.prisma = createPrismaClient()
-    }
-    return Reflect.get(globalForPrisma.prisma, prop, receiver)
-  }
-})
+const PRISMA_SYMBOL = Symbol.for('app.prisma.instance')
+const globalAny = globalThis as any
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
+if (!globalAny[PRISMA_SYMBOL]) {
+  globalAny[PRISMA_SYMBOL] = createPrismaClient()
 }
+
+export const prisma = globalAny[PRISMA_SYMBOL] as PrismaClient
