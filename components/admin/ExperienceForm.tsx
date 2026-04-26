@@ -21,10 +21,10 @@ const schema = z.object({
   description: z.string().min(10, "La description est trop courte"),
   startDate: z.string(),
   endDate: z.string().optional().nullable(),
-  current: z.boolean(),
-  order: z.number(),
+  current: z.boolean().default(false),
+  order: z.coerce.number().optional(),
   imageUrl: z.string().optional(),
-  likes: z.number().default(0),
+  likes: z.coerce.number().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -107,7 +107,11 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
-          endDate: values.current ? null : values.endDate,
+          likes: values.likes ?? 0,
+          order: values.order ?? 0,
+          location: values.location ?? "",
+          imageUrl: values.imageUrl ?? "",
+          endDate: values.current ? null : (values.endDate || null),
         }),
       })
 
