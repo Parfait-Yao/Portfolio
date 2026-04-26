@@ -14,7 +14,13 @@ export default async function AboutPage() {
   const { prisma } = await import("@/lib/prisma")
   
   const t = translations[locale];
-  const about = await prisma.about.findFirst()
+  
+  let about = null;
+  try {
+    about = await prisma.about.findFirst();
+  } catch (error) {
+    console.error("About database fetch failed", error);
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -47,17 +53,17 @@ export default async function AboutPage() {
               <div>
                 <h3 className="text-[12px] font-bold tracking-[0.15em] uppercase text-foreground/40 mb-6">{t.aboutPage.contactTitle}</h3>
                 <div className="space-y-4 font-jakarta text-foreground font-semibold text-[16px]">
-                  <a href={`mailto:${about?.email}`} className="flex items-center gap-4 hover:text-black/50 transition-colors">
+                  <a href={`mailto:${about?.email || 'contact@example.com'}`} className="flex items-center gap-4 hover:text-black/50 transition-colors">
                     <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center text-foreground/60">
                       <Mail size={14} strokeWidth={2} />
                     </div>
-                    {about?.email}
+                    {about?.email || 'contact@example.com'}
                   </a>
                   <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center text-foreground/60">
                       <MapPin size={14} strokeWidth={2} />
                     </div>
-                    {about?.location}
+                    {about?.location || 'Paris, France'}
                   </div>
                 </div>
               </div>
@@ -81,7 +87,7 @@ export default async function AboutPage() {
             {t.aboutPage.contentTitle1} <br /> <span className="text-foreground/40 italic">{t.aboutPage.contentTitle2}</span>
           </h2>
             <div className="font-body text-[18px] md:text-[20px] text-foreground/70 leading-[1.7] space-y-8 whitespace-pre-line max-w-xl">
-              {about?.bio}
+              {about?.bio || "Biographie en cours de rédaction..."}
             </div>
 
             <div className="grid grid-cols-2 gap-12 mt-24 pt-16 border-t border-border">

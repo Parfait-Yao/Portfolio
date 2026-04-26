@@ -7,5 +7,16 @@ export function ThemeProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // On utilise suppressHydrationWarning car next-themes injecte un script dans le head
+  return (
+    <NextThemesProvider {...props}>
+      {children}
+    </NextThemesProvider>
+  )
 }

@@ -28,7 +28,10 @@ export default function RootLayout({
       className={`${jakarta.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-jakarta bg-background text-foreground transition-colors duration-300">
+      <body 
+        className="min-h-full flex flex-col font-jakarta bg-background text-foreground transition-colors duration-300"
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
