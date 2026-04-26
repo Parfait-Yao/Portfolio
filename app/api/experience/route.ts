@@ -32,9 +32,9 @@ export async function POST(req: Request) {
         description: data.description,
         location: data.location,
         order: data.order,
-        imageUrl: data.imageUrl,
         likes: data.likes || 0,
-      }
+        imageUrl: data.imageUrl,
+      } as any
     })
     return NextResponse.json(experience)
   } catch (error) {

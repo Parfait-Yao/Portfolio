@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
+export const dynamic = 'force-dynamic'
+
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -25,7 +27,7 @@ export async function PUT(
         order: data.order,
         imageUrl: data.imageUrl,
         likes: data.likes || 0,
-      }
+      } as any
     })
     return NextResponse.json(experience)
   } catch (error) {
