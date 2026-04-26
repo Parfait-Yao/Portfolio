@@ -5,15 +5,11 @@ export const runtime = 'nodejs'
 
 export async function GET() {
   try {
-    const { neon } = await import("@neondatabase/serverless")
-    const DATABASE_URL = process.env.DATABASE_URL
-    
-    if (!DATABASE_URL) return NextResponse.json({})
-    
-    const sql = neon(DATABASE_URL)
-    const results = await sql`SELECT * FROM "About" LIMIT 1`
-    return NextResponse.json(results[0] || {})
+    const { prisma } = await import("@/lib/prisma")
+    const existing = await prisma.about.findFirst()
+    return NextResponse.json(existing || {})
   } catch (error) {
+    console.error("GET About Error:", error)
     return NextResponse.json({})
   }
 }

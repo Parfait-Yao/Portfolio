@@ -5,14 +5,13 @@ export const runtime = 'nodejs'
 
 export async function GET() {
   try {
-    const { neon } = await import("@neondatabase/serverless")
-    const DATABASE_URL = process.env.DATABASE_URL
-    if (!DATABASE_URL) return NextResponse.json([])
-    
-    const sql = neon(DATABASE_URL)
-    const projects = await sql`SELECT * FROM "Project" ORDER BY "order" ASC`
+    const { prisma } = await import("@/lib/prisma")
+    const projects = await prisma.project.findMany({
+      orderBy: { order: 'asc' }
+    })
     return NextResponse.json(projects)
   } catch (error) {
+    console.error("GET Projects Error:", error)
     return NextResponse.json([])
   }
 }
@@ -23,19 +22,26 @@ export async function POST(req: Request) {
     const session = await auth()
     if (!session) return new NextResponse('Unauthorized', { status: 401 })
 
-    const { neon } = await import("@neondatabase/serverless")
-    const DATABASE_URL = process.env.DATABASE_URL
-    if (!DATABASE_URL) return NextResponse.json({ error: "DB not configured" }, { status: 500 })
-    
-    const sql = neon(DATABASE_URL)
+    const { prisma } = await import("@/lib/prisma")
     const data = await req.json()
-    const res = await sql`
-      INSERT INTO "Project" (title, description, "imageUrl", tags, "githubUrl", "liveUrl", "featured", "order")
-      VALUES (${data.title}, ${data.description}, ${data.imageUrl}, ${data.tags}, ${data.githubUrl}, ${data.liveUrl}, ${data.featured}, ${data.order})
-      RETURNING *
-    `
-    return NextResponse.json(res[0])
-  } catch (error) {
+    
+    const project = await prisma.project.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        longDesc: data.longDesc || null,
+        imageUrl: data.imageUrl || null,
+        tags: data.tags || [],
+        githubUrl: data.githubUrl || null,
+        liveUrl: data.liveUrl || null,
+        featured: data.featured || false,
+        order: data.order || 0,
+      }
+    })
+    
+    return NextResponse.json(project)
+  } catch (error: any) {
+    console.error("POST Project Error:", error.message || error)
     return NextResponse.json({ error: "Failed to create project" }, { status: 500 })
   }
 }
