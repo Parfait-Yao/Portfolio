@@ -1,17 +1,31 @@
-import { PrismaClient } from "@prisma/client";
+import { Pool, neonConfig } from '@neondatabase/serverless'
+import { PrismaNeon } from '@prisma/adapter-neon'
+import { PrismaClient } from '@prisma/client'
+import ws from 'ws'
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
+// Configuration pour Neon avec WebSocket (requis pour certains environnements serverless)
+neonConfig.webSocketConstructor = ws
 
-const connectionString = process.env.DATABASE_URL;
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
-if (!connectionString) {
-  console.error("❌ DATABASE_URL is missing!");
+const createPrismaClient = () => {
+  const connectionString = process.env.DATABASE_URL
+  
+  if (!connectionString) {
+    // Pendant le build sur Vercel, DATABASE_URL peut être absent.
+    // On retourne un client standard ou on gère l'erreur.
+    return new PrismaClient()
+  }
+
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaNeon(pool)
+
+  return new PrismaClient({
+    adapter,
+    log: ['error', 'warn'],
+  })
 }
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ["error", "warn"],
-  });
+export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
