@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
+export const dynamic = 'force-dynamic'
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -11,7 +13,7 @@ export async function PATCH(
       where: { id },
       data: {
         likes: { increment: 1 }
-      }
+      } as any
     })
     return NextResponse.json(experience)
   } catch (error) {
