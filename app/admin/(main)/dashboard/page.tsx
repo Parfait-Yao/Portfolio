@@ -1,134 +1,113 @@
 import React from "react"
 import { 
   Users, 
+  MessageSquare, 
   Briefcase, 
   Code2, 
-  MessageSquare, 
-  GraduationCap,
-  TrendingUp,
+  TrendingUp, 
   Clock,
-  ExternalLink
+  AlertTriangle
 } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboard() {
-  // Imports dynamiques pour éviter les erreurs au build
-  const { prisma } = await import("@/lib/prisma")
+  let stats = {
+    messages: 0,
+    unreadMessages: 0,
+    projects: 0,
+    experiences: 0,
+    skills: 0
+  }
 
-  const [
-    experienceCount,
-    projectCount,
-    skillCount,
-    messageCount,
-    educationCount,
-    recentMessages
-  ] = await Promise.all([
-    prisma.experience.count(),
-    prisma.project.count(),
-    prisma.skill.count(),
-    prisma.message.count(),
-    prisma.education.count(),
-    prisma.message.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' }
-    })
-  ])
+  let recentMessages: any[] = []
+  let error: string | null = null
 
-  const stats = [
-    { label: "Expériences", value: experienceCount, icon: Briefcase, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Projets", value: projectCount, icon: Code2, color: "text-purple-500", bg: "bg-purple-500/10" },
-    { label: "Compétences", value: skillCount, icon: TrendingUp, color: "text-green-500", bg: "bg-green-500/10" },
-    { label: "Messages", value: messageCount, icon: MessageSquare, color: "text-orange-500", bg: "bg-orange-500/10" },
-    { label: "Éducation", value: educationCount, icon: GraduationCap, color: "text-cyan-500", bg: "bg-cyan-500/10" },
-  ]
+  try {
+    const { prisma } = await import("@/lib/prisma")
+    
+    const [messagesCount, unreadCount, projectsCount, expCount, skillsCount, messages] = await Promise.all([
+      prisma.message.count(),
+      prisma.message.count({ where: { read: false } }),
+      prisma.project.count(),
+      prisma.experience.count(),
+      prisma.skill.count(),
+      prisma.message.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' }
+      })
+    ])
+
+    stats = {
+      messages: messagesCount,
+      unreadMessages: unreadCount,
+      projects: projectsCount,
+      experiences: expCount,
+      skills: skillsCount
+    }
+    recentMessages = messages
+  } catch (e: any) {
+    console.error("Dashboard data fetch failed:", e.message)
+    error = e.message
+  }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Bienvenue dans votre espace d'administration.</p>
+    <div className="space-y-10">
+      <div>
+        <h1 className="text-3xl font-display font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Bienvenue dans votre espace d'administration.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        {stats.map((stat) => (
-          <div key={stat.label} className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all border-border/50">
-            <div className="flex items-center gap-4">
-              <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
-                <stat.icon size={20} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                <p className="text-2xl font-bold">{stat.value}</p>
-              </div>
+      {error && (
+        <div className="bg-destructive/10 border border-destructive/20 p-6 rounded-2xl flex items-center gap-4 text-destructive">
+          <AlertTriangle size={24} />
+          <div>
+            <p className="font-bold">Erreur de base de données</p>
+            <p className="text-sm opacity-80">{error}</p>
+            <p className="text-xs mt-2 italic">Astuce: Vérifiez que DATABASE_URL est activée pour les environnements 'Preview' sur Vercel.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: "Messages", value: stats.messages, icon: MessageSquare, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { label: "Non lus", value: stats.unreadMessages, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { label: "Projets", value: stats.projects, icon: Code2, color: "text-purple-500", bg: "bg-purple-500/10" },
+          { label: "Expériences", value: stats.experiences, icon: Briefcase, color: "text-emerald-500", bg: "bg-emerald-500/10" }
+        ].map((stat, i) => (
+          <div key={i} className="bg-card border border-border p-8 rounded-3xl">
+            <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-6`}>
+              <stat.icon size={24} />
             </div>
+            <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest">{stat.label}</p>
+            <p className="text-4xl font-display font-bold mt-2">{stat.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Messages Récents */}
-        <div className="rounded-xl border bg-card shadow-sm border-border/50 overflow-hidden">
-          <div className="p-6 border-b border-border/50 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageSquare size={18} className="text-muted-foreground" />
-              <h2 className="font-semibold">Messages Récents</h2>
-            </div>
-            <button className="text-xs text-primary hover:underline flex items-center gap-1">
-              Voir tout <ExternalLink size={12} />
-            </button>
-          </div>
-          <div className="divide-y divide-border/50">
-            {recentMessages.length > 0 ? (
-              recentMessages.map((msg) => (
-                <div key={msg.id} className="p-4 hover:bg-muted/50 transition-colors">
-                  <div className="flex justify-between items-start mb-1">
-                    <p className="font-medium text-sm">{msg.name}</p>
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                      <Clock size={10} />
-                      {new Date(msg.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-1">{msg.subject}</p>
-                </div>
-              ))
-            ) : (
-              <div className="p-8 text-center text-sm text-muted-foreground">
-                Aucun message reçu pour le moment.
-              </div>
-            )}
-          </div>
+      {/* Recent Activity */}
+      <div className="bg-card border border-border rounded-[32px] overflow-hidden">
+        <div className="p-8 border-b border-border flex justify-between items-center">
+          <h2 className="text-xl font-bold">Messages Récents</h2>
         </div>
-
-        {/* Quick Actions / Status */}
-        <div className="rounded-xl border bg-card shadow-sm border-border/50 p-6 space-y-6">
-          <h2 className="font-semibold flex items-center gap-2">
-            <Clock size={18} className="text-muted-foreground" />
-            Statut du Portfolio
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-medium">Site Public</span>
+        <div className="divide-y divide-border">
+          {recentMessages.map((msg) => (
+            <div key={msg.id} className="p-8 hover:bg-muted/50 transition-colors flex justify-between items-center">
+              <div>
+                <p className="font-bold text-lg">{msg.name}</p>
+                <p className="text-sm text-muted-foreground">{msg.email} • {new Date(msg.createdAt).toLocaleDateString()}</p>
+                <p className="mt-2 text-foreground/80 line-clamp-1">{msg.subject}</p>
               </div>
-              <span className="text-xs font-bold text-green-500 uppercase">Online</span>
+              {!msg.read && <span className="w-3 h-3 bg-primary rounded-full" />}
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <span className="text-sm font-medium">Base de données</span>
-              </div>
-              <span className="text-xs font-bold text-green-500 uppercase">Connected</span>
+          ))}
+          {recentMessages.length === 0 && !error && (
+            <div className="p-20 text-center text-muted-foreground italic">
+              Aucun message pour le moment.
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-blue-500" />
-                <span className="text-sm font-medium">API Cloudinary</span>
-              </div>
-              <span className="text-xs font-bold text-blue-500 uppercase">Active</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
