@@ -1,10 +1,8 @@
 import React from "react"
-import { prisma } from "@/lib/prisma"
-import { Layout, Server, Database, Wrench, Cpu, CheckCircle2, ChevronRight } from "lucide-react"
+import { Layout, Server, Database, Wrench, Cpu, ChevronRight } from "lucide-react"
 import Section from "@/components/public/Section"
 import Link from "next/link"
 import { cookies } from 'next/headers'
-import { translations } from '@/lib/translations'
 
 const getIcon = (cat: string) => {
   switch(cat) {
@@ -16,9 +14,16 @@ const getIcon = (cat: string) => {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function SkillsPage() {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  
+  // Imports dynamiques
+  const { translations } = await import('@/lib/translations')
+  const { prisma } = await import("@/lib/prisma")
+  
   const t = translations[locale];
 
   const skillsData = await prisma.skill.findMany({
@@ -29,7 +34,6 @@ export default async function SkillsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Header Section */}
       <Section className="pt-[140px] pb-[72px] md:pt-[180px] md:pb-[100px]">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
@@ -44,7 +48,6 @@ export default async function SkillsPage() {
         </div>
       </Section>
 
-      {/* Skills Grid */}
       <Section className="pb-[120px] pt-0">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:pb-12">
@@ -59,7 +62,6 @@ export default async function SkillsPage() {
                   key={cat} 
                   className={`bg-card/40 backdrop-blur-md border border-border hover:border-primary/30 rounded-[32px] p-8 md:p-12 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 overflow-hidden relative group ${index % 2 !== 0 ? "md:translate-y-12" : ""}`}
                 >
-                  {/* Decorative background element */}
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -mx-32 -my-32 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                   
                   <div className="relative z-10">
@@ -105,7 +107,6 @@ export default async function SkillsPage() {
         </div>
       </Section>
 
-      {/* Projects CTA */}
       <Section className="bg-primary text-primary-foreground rounded-[40px] mx-4 md:mx-10 mb-10 overflow-hidden text-center py-16">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-primary-foreground mb-10">

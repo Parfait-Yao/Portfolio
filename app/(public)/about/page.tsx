@@ -1,20 +1,23 @@
 import React from "react"
-import { prisma } from "@/lib/prisma"
-import { MapPin, Mail, Globe, Link as LinkIcon, User } from "lucide-react"
+import { MapPin, Mail, Globe, Link as LinkIcon } from "lucide-react"
 import Section from "@/components/public/Section"
 import { cookies } from 'next/headers'
-import { translations } from '@/lib/translations'
+
+export const dynamic = 'force-dynamic'
 
 export default async function AboutPage() {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  
+  // Imports dynamiques pour éviter les erreurs au build
+  const { translations } = await import('@/lib/translations')
+  const { prisma } = await import("@/lib/prisma")
+  
   const t = translations[locale];
-
   const about = await prisma.about.findFirst()
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Hero / Intro section */}
       <Section className="pt-[140px] pb-12 md:pt-[180px]">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
@@ -26,11 +29,9 @@ export default async function AboutPage() {
         </div>
       </Section>
 
-      {/* Main content grid */}
       <Section className="pb-[120px] pt-0">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 items-start">
           
-          {/* Photo & Basic Info Column */}
           <div className="space-y-16 lg:sticky lg:top-32">
             <div className="aspect-[4/5] rounded-3xl overflow-hidden bg-muted border border-border grayscale hover:grayscale-0 transition-all duration-1000 shadow-[0_20px_50px_rgba(0,0,0,0.03)] mx-auto md:mx-0">
                {about?.photo && (
@@ -75,7 +76,6 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          {/* Bio & Statistics Column */}
           <div className="pt-0 md:pt-12">
             <h2 className="text-[clamp(32px,5vw,48px)] font-serif text-foreground leading-[1.1] mb-12">
             {t.aboutPage.contentTitle1} <br /> <span className="text-foreground/40 italic">{t.aboutPage.contentTitle2}</span>

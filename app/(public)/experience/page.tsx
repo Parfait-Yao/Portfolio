@@ -1,5 +1,4 @@
 import React from "react"
-import { prisma } from "@/lib/prisma"
 import { 
   GraduationCap, 
   Briefcase,
@@ -12,11 +11,17 @@ import Section from "@/components/public/Section"
 import ExperienceList from "@/components/public/ExperienceList"
 import Link from "next/link"
 import { cookies } from 'next/headers'
-import { translations } from '@/lib/translations'
+
+export const dynamic = 'force-dynamic'
 
 export default async function ExperiencePage() {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  
+  // Imports dynamiques
+  const { translations } = await import('@/lib/translations')
+  const { prisma } = await import("@/lib/prisma")
+  
   const t = translations[locale];
 
   let experiences = await prisma.experience.findMany({

@@ -1,15 +1,20 @@
 import React from "react"
-import { prisma } from "@/lib/prisma"
 import ProjectList from "@/components/public/ProjectList"
 import Section from "@/components/public/Section"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { cookies } from 'next/headers'
-import { translations } from '@/lib/translations'
+
+export const dynamic = 'force-dynamic'
 
 export default async function ProjectsPage() {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  
+  // Imports dynamiques
+  const { translations } = await import('@/lib/translations')
+  const { prisma } = await import("@/lib/prisma")
+  
   const t = translations[locale];
 
   let projects = await prisma.project.findMany({
@@ -19,7 +24,7 @@ export default async function ProjectsPage() {
     ]
   })
 
-  // Fallback to placeholder data if the database is empty so the UI doesn't break and the user can see the design
+  // Fallback to placeholder data if the database is empty
   if (projects.length === 0) {
     projects = [
       {
@@ -81,7 +86,6 @@ export default async function ProjectsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Header Section */}
       <Section className="pt-[140px] pb-[72px] md:pt-[180px] md:pb-[100px]">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
@@ -96,7 +100,6 @@ export default async function ProjectsPage() {
         </div>
       </Section>
 
-      {/* Projects Grid */}
       <Section className="pb-[120px] pt-0">
         <div className="max-w-6xl mx-auto px-6">
           <ProjectList initialProjects={projects} />
@@ -109,7 +112,6 @@ export default async function ProjectsPage() {
         </div>
       </Section>
 
-      {/* Contact Section Preview */}
       <Section className="bg-primary text-primary-foreground rounded-[40px] mx-4 md:mx-10 mb-10 overflow-hidden text-center py-16">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-primary-foreground mb-10">

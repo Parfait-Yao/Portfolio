@@ -1,20 +1,11 @@
 import React from "react"
 import Link from "next/link"
-import { prisma } from "@/lib/prisma"
 import { 
   ArrowRight, 
   ChevronRight, 
   Zap, 
-  Atom, 
-  Code2, 
-  Server, 
   Database, 
-  Wind, 
-  Box, 
-  GitBranch, 
-  Image, 
   Mail,
-  Cpu,
   Briefcase,
   Code,
   ShieldCheck,
@@ -27,9 +18,10 @@ import Section from "@/components/public/Section"
 import TechCell from "@/components/public/TechCell"
 import Magnetic from "@/components/public/Magnetic"
 import Hero from "@/components/public/Hero"
-
 import { cookies } from 'next/headers'
-import { translations } from '@/lib/translations'
+
+export const dynamic = 'force-dynamic'
+
 const techIcons: Record<string, { label: string }> = {
   'Next.js': { label: 'Framework' },
   'React': { label: 'Library' },
@@ -46,6 +38,11 @@ const techIcons: Record<string, { label: string }> = {
 export default async function Home() {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('app-language')?.value as 'fr' | 'en') || 'fr';
+  
+  // Imports dynamiques pour le build
+  const { translations } = await import('@/lib/translations')
+  const { prisma } = await import("@/lib/prisma")
+  
   const t = translations[locale];
 
   const about = await prisma.about.findFirst()
@@ -122,7 +119,7 @@ export default async function Home() {
         />
       </Section>
 
-      {/* Dynamic Experience Preview Section [NEW] */}
+      {/* Dynamic Experience Preview Section */}
       {latestExperience && (
         <Section className="pb-24">
           <div className="max-w-4xl mx-auto px-6">
@@ -214,7 +211,6 @@ export default async function Home() {
         </div>
       </Section>
 
-      {/* Skills / Tech Section */}
       <Section className="text-center pt-[100px] pb-0">
         <div className="max-w-6xl mx-auto px-6">
           <span className="pill-tag mb-6">
@@ -235,11 +231,9 @@ export default async function Home() {
         </div>
       </Section>
 
-      {/* Methodology Section Inspired by Model [NEW] */}
       <Section className="pb-[100px] pt-[120px]">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           
-          {/* Image Side */}
           <div className="relative aspect-[16/10] lg:aspect-[4/5] rounded-[28px] overflow-hidden bg-muted border border-border group transition-all duration-300 shadow-2xl">
              <img 
                src="/methodology_process_photo_1777160679780.png" 
@@ -252,14 +246,12 @@ export default async function Home() {
                <span className="font-serif text-5xl md:text-6xl italic text-white/40 drop-shadow-lg text-center leading-tight" dangerouslySetInnerHTML={{ __html: `${t.home.artisanal} <br /> ${t.home.digital}` }}></span>
              </div>
              
-             {/* Decorative Elements */}
              <div className="absolute bottom-8 left-8 right-8 p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 transition-all duration-500 group-hover:bg-white/20">
                <p className="text-white font-jakarta font-bold text-lg">{t.home.qualityPerf}</p>
                <p className="text-white/70 text-sm">{t.home.commitment}</p>
              </div>
           </div>
 
-          {/* List Side */}
           <div className="space-y-14">
             <div>
               <span className="pill-tag mb-6 text-foreground/40">{t.home.approach}</span>

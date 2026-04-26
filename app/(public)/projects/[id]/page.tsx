@@ -1,21 +1,23 @@
 import React from "react"
-import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
-import { ArrowLeft, ExternalLink, Code, Calendar, Layout } from "lucide-react"
+import { ArrowLeft, ExternalLink, Code, Layout } from "lucide-react"
 import Link from "next/link"
 import { FaGithub } from "react-icons/fa6"
 
-interface ProjectPageProps {
-  params: { id: string }
-}
+export const dynamic = 'force-dynamic'
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  
+  // Imports dynamiques
+  const { prisma } = await import("@/lib/prisma")
+  
   const project = await prisma.project.findUnique({
     where: { id }
   })
 
   if (!project) notFound()
+  const p = project as any
 
   return (
     <div className="bg-background min-h-screen">
@@ -33,7 +35,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             Projet Détail
           </span>
           <h1 className="font-serif text-[clamp(48px,7vw,80px)] leading-[1.05] tracking-tight text-foreground mb-8">
-            {project.title}
+            {p.title}
           </h1>
           
           <div className="flex flex-wrap gap-8 py-8 border-y border-border mb-12">
@@ -47,14 +49,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               <span className="text-muted-foreground text-[11px] font-medium tracking-widest uppercase mb-1 flex items-center gap-1.5">
                 <Layout size={12} strokeWidth={1.5} /> Date
               </span>
-              <span className="font-body text-foreground font-semibold">{project.createdAt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
+              <span className="font-body text-foreground font-semibold">{p.createdAt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-muted-foreground text-[11px] font-medium tracking-widest uppercase mb-1 flex items-center gap-1.5">
                 <Code size={12} strokeWidth={1.5} /> Stack
               </span>
               <div className="flex gap-2">
-                {project.tags.map((tag: any) => (
+                {p.tags.map((tag: any) => (
                   <span key={tag} className="font-body text-foreground font-semibold">{tag}</span>
                 ))}
               </div>
@@ -66,11 +68,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
       {/* Main Content & Image */}
       <section className="pb-[120px]">
         <div className="max-w-6xl mx-auto px-6">
-          {project.imageUrl && (
+          {p.imageUrl && (
             <div className="rounded-3xl border border-border overflow-hidden bg-muted mb-12 aspect-[16/9] md:aspect-[21/9]">
               <img 
-                src={project.imageUrl} 
-                alt={project.title}
+                src={p.imageUrl} 
+                alt={p.title}
                 className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" 
               />
             </div>
@@ -80,15 +82,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <div className="lg:col-span-8">
               <h2 className="font-serif text-4xl text-foreground mb-8">Description de l'architecture.</h2>
               <div className="font-body text-[17px] text-foreground/70 leading-[1.8] space-y-6 whitespace-pre-wrap">
-                {project.longDesc || project.description}
+                {p.longDesc || p.description}
               </div>
             </div>
             
             <div className="lg:col-span-4 lg:pl-12 flex flex-col gap-6">
               <h3 className="font-body text-[13px] font-medium tracking-widest uppercase text-muted-foreground mb-2 border-b border-border pb-4">Liens directs</h3>
-              {project.liveUrl && (
+              {p.liveUrl && (
                 <a 
-                  href={project.liveUrl} 
+                  href={p.liveUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-body font-medium hover:opacity-90 transition-all flex items-center justify-center gap-3 text-sm shadow-xl"
@@ -96,9 +98,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   Voir le site live <ExternalLink size={14} strokeWidth={2} />
                 </a>
               )}
-              {project.githubUrl && (
+              {p.githubUrl && (
                 <a 
-                  href={project.githubUrl} 
+                  href={p.githubUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="border border-primary/40 text-primary px-8 py-4 rounded-full font-body font-bold hover:bg-primary/5 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest"
