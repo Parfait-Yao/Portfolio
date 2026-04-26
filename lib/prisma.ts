@@ -8,13 +8,14 @@ neonConfig.webSocketConstructor = ws
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
 const createPrismaClient = () => {
-  const url = process.env.DATABASE_URL
+  const url = process.env.DATABASE_URL || process.env.NEXT_PUBLIC_DATABASE_URL
   
-  // LOG DE DEBUG (S'affichera dans les logs Vercel)
   if (!url) {
-    console.error("❌ CRITICAL: DATABASE_URL is NOT found in process.env at runtime!")
+    console.error("❌ ERROR: DATABASE_URL is missing! Keys available:", Object.keys(process.env).filter(k => !k.includes('KEY') && !k.includes('SECRET')))
     return new PrismaClient()
   }
+
+  console.log("✅ DATABASE_URL détectée (longueur: " + url.length + ")")
 
   try {
     const pool = new Pool({ connectionString: url })
@@ -30,7 +31,6 @@ const createPrismaClient = () => {
   }
 }
 
-// En PRODUCTION sur Vercel, on évite de réutiliser un global potentiellement corrompu au build
 export const prisma = (process.env.NODE_ENV === 'production') 
   ? createPrismaClient() 
   : (globalForPrisma.prisma || createPrismaClient())
