@@ -22,9 +22,9 @@ const schema = z.object({
   startDate: z.string(),
   endDate: z.string().optional().nullable(),
   current: z.boolean().default(false),
-  order: z.coerce.number().optional(),
+  order: z.coerce.number().default(0),
   imageUrl: z.string().optional(),
-  likes: z.coerce.number().optional(),
+  likes: z.coerce.number().default(0),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -41,7 +41,7 @@ export default function ExperienceForm({ experience, isOpen, onClose, onSuccess 
   const [uploading, setUploading] = useState(false)
   
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: experience ? {
       role: experience.role || "",
       company: experience.company || "",
