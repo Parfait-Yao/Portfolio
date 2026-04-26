@@ -4,9 +4,14 @@ import { NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function GET() {
   try {
+    // On s'assure que prisma est bien accessible
+    if (!prisma) {
+        return NextResponse.json({ error: "Database client not initialized" }, { status: 500 })
+    }
     const about = await prisma.about.findFirst()
     return NextResponse.json(about || {})
   } catch (error) {
@@ -23,9 +28,6 @@ export async function PUT(req: Request) {
     const data = await req.json()
     const { id, ...fields } = data
 
-    // Convert empty strings to null or leave them alone depending on schema. 
-    // Prisma accepts empty strings for Strings, but let's make sure it's clean.
-
     let res
     if (id) {
       res = await prisma.about.update({
@@ -33,10 +35,6 @@ export async function PUT(req: Request) {
         data: fields
       })
     } else {
-      // Create is needed if no About record exists yet
-      // Sometimes findFirst might exist and people delete it, but generally we just create
-      
-      // Since there's supposed to be only one about record max, let's ensure we don't create duplicates
       const existing = await prisma.about.findFirst()
       if (existing) {
         res = await prisma.about.update({
@@ -50,7 +48,6 @@ export async function PUT(req: Request) {
       }
     }
     
-    // Revalidate paths that show about data
     revalidatePath('/')
     revalidatePath('/about')
     revalidatePath('/admin/about')
