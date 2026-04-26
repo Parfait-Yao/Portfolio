@@ -2,9 +2,12 @@ import { auth } from "@/lib/auth"
 import { neon } from "@neondatabase/serverless"
 import { NextResponse } from "next/server"
 
-const sql = neon(process.env.DATABASE_URL!)
+export const dynamic = 'force-dynamic'
+
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null
 
 export async function GET() {
+  if (!sql) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
   try {
     // Note: We use the serverless HTTP driver for better compatibility with Next.js 16/Node 24
     const projects = await sql`SELECT * FROM "Project" ORDER BY "order" ASC`
@@ -16,6 +19,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  if (!sql) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
   const session = await auth()
   if (!session) return new NextResponse('Unauthorized', { status: 401 })
 
