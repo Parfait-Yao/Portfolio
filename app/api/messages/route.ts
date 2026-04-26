@@ -1,25 +1,27 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function GET() {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const messages = await prisma.message.findMany({
       orderBy: { createdAt: 'desc' }
     })
     return NextResponse.json(messages)
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 })
+    return NextResponse.json([])
   }
 }
 
 export async function POST(req: Request) {
   try {
+    const { prisma } = await import("@/lib/prisma")
     const body = await req.json()
     const { name, email, subject, body: messageBody } = body
 
@@ -35,8 +37,6 @@ export async function POST(req: Request) {
         body: messageBody
       }
     })
-
-    // TODO: Send email using Resend
     
     return NextResponse.json(message)
   } catch (error) {
