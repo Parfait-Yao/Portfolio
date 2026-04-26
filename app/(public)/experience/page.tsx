@@ -24,9 +24,20 @@ export default async function ExperiencePage() {
   
   const t = translations[locale];
 
-  let experiences = await prisma.experience.findMany({
-    orderBy: { startDate: 'desc' }
-  })
+  let experiences = []
+  let education = []
+  
+  try {
+    experiences = await prisma.experience.findMany({
+      orderBy: { startDate: 'desc' }
+    })
+
+    education = await prisma.education.findMany({
+      orderBy: { startDate: 'desc' }
+    })
+  } catch (error) {
+    console.error("Failed to fetch experience/education from database:", error)
+  }
 
   // Fallback for preview if DB is empty
   if (experiences.length === 0) {
@@ -45,10 +56,6 @@ export default async function ExperiencePage() {
       }
     ] as any[]
   }
-
-  const education = await prisma.education.findMany({
-    orderBy: { startDate: 'desc' }
-  })
 
   return (
     <div className="bg-background min-h-screen pb-20">

@@ -26,9 +26,14 @@ export default async function SkillsPage() {
   
   const t = translations[locale];
 
-  const skillsData = await prisma.skill.findMany({
-    orderBy: { order: 'asc' }
-  })
+  let skillsData = []
+  try {
+    skillsData = await prisma.skill.findMany({
+      orderBy: { order: 'asc' }
+    })
+  } catch (error) {
+    console.error("Failed to fetch skills from database:", error)
+  }
 
   const categories = ["Frontend", "Backend", "DevOps", "Design"]
 

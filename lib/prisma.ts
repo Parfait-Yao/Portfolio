@@ -11,17 +11,24 @@ const createPrismaClient = () => {
   const url = process.env.DATABASE_URL
   
   if (!url) {
-    console.warn("⚠️ DATABASE_URL non détectée à l'initialisation.")
+    console.error("❌ CRITICAL: DATABASE_URL is missing in environment variables.")
+    // We return a disconnected PrismaClient to avoid crashing immediately,
+    // but queries will still fail.
     return new PrismaClient()
   }
 
-  const pool = new Pool({ connectionString: url })
-  const adapter = new PrismaNeon(pool as any)
+  try {
+    const pool = new Pool({ connectionString: url })
+    const adapter = new PrismaNeon(pool as any)
 
-  return new PrismaClient({
-    adapter,
-    log: ['error', 'warn'],
-  })
+    return new PrismaClient({
+      adapter,
+      log: ['error', 'warn'],
+    })
+  } catch (error) {
+    console.error("❌ Failed to initialize Prisma with Neon adapter:", error)
+    return new PrismaClient()
+  }
 }
 
 // On utilise un Proxy pour que 'prisma' ne soit initialisé 

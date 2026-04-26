@@ -17,12 +17,17 @@ export default async function ProjectsPage() {
   
   const t = translations[locale];
 
-  let projects = await prisma.project.findMany({
-    orderBy: [
-      { featured: 'desc' },
-      { order: 'asc' }
-    ]
-  })
+  let projects = []
+  try {
+    projects = await prisma.project.findMany({
+      orderBy: [
+        { featured: 'desc' },
+        { order: 'asc' }
+      ]
+    })
+  } catch (error) {
+    console.error("Failed to fetch projects from database:", error)
+  }
 
   // Fallback to placeholder data if the database is empty
   if (projects.length === 0) {
