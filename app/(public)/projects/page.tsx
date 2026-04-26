@@ -17,7 +17,7 @@ export default async function ProjectsPage() {
   
   const t = translations[locale];
 
-  let projects = []
+  let projects: any[] = []
   try {
     projects = await prisma.project.findMany({
       orderBy: [

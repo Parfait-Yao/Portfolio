@@ -24,8 +24,8 @@ export default async function ExperiencePage() {
   
   const t = translations[locale];
 
-  let experiences = []
-  let education = []
+  let experiences: any[] = []
+  let education: any[] = []
   
   try {
     experiences = await prisma.experience.findMany({

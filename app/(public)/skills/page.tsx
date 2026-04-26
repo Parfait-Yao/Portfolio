@@ -26,7 +26,7 @@ export default async function SkillsPage() {
   
   const t = translations[locale];
 
-  let skillsData = []
+  let skillsData: any[] = []
   try {
     skillsData = await prisma.skill.findMany({
       orderBy: { order: 'asc' }
