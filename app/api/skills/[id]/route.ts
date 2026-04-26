@@ -1,14 +1,15 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const { id } = await params;
     const data = await req.json()
     const skill = await prisma.skill.update({
@@ -28,10 +29,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const { id } = await params;
     await prisma.skill.delete({
       where: { id }

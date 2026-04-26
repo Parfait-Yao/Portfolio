@@ -1,17 +1,18 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const { id } = await params;
     const data = await req.json()
     const experience = await prisma.experience.update({
@@ -31,7 +32,6 @@ export async function PUT(
     })
     return NextResponse.json(experience)
   } catch (error) {
-    console.error("[EXPERIENCE_PUT]", error)
     return NextResponse.json({ error: "Failed to update experience" }, { status: 500 })
   }
 }
@@ -40,17 +40,18 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
     const { id } = await params;
     await prisma.experience.delete({
       where: { id }
     })
     return new NextResponse(null, { status: 204 })
   } catch (error) {
-    console.error("[EXPERIENCE_DELETE]", error)
     return NextResponse.json({ error: "Failed to delete experience" }, { status: 500 })
   }
 }
