@@ -3,30 +3,37 @@ import { PrismaNeon } from '@prisma/adapter-neon'
 import { PrismaClient } from '@prisma/client'
 import ws from 'ws'
 
-// Requis pour les environnements Node.js serverless
 neonConfig.webSocketConstructor = ws
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
 const createPrismaClient = () => {
-  // LECTURE AU MOMENT DE L'APPEL (Important pour Vercel)
   const url = process.env.DATABASE_URL
   
+  // LOG DE DEBUG (S'affichera dans les logs Vercel)
   if (!url) {
-    console.warn("⚠️ DATABASE_URL non détectée, client standard utilisé.")
+    console.error("❌ CRITICAL: DATABASE_URL is NOT found in process.env at runtime!")
     return new PrismaClient()
   }
 
-  const pool = new Pool({ connectionString: url })
-  const adapter = new PrismaNeon(pool as any)
+  try {
+    const pool = new Pool({ connectionString: url })
+    const adapter = new PrismaNeon(pool as any)
 
-  return new PrismaClient({
-    adapter,
-    log: ['error', 'warn'],
-  })
+    return new PrismaClient({
+      adapter,
+      log: ['error', 'warn'],
+    })
+  } catch (e) {
+    console.error("❌ Prisma Initialization Error:", e)
+    return new PrismaClient()
+  }
 }
 
-export const prisma = globalForPrisma.prisma || createPrismaClient()
+// En PRODUCTION sur Vercel, on évite de réutiliser un global potentiellement corrompu au build
+export const prisma = (process.env.NODE_ENV === 'production') 
+  ? createPrismaClient() 
+  : (globalForPrisma.prisma || createPrismaClient())
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma

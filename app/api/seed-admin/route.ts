@@ -7,26 +7,41 @@ export async function GET() {
   try {
     const { prisma } = await import("@/lib/prisma")
     
-    // Vérifier si l'admin existe déjà
-    const existingAdmin = await prisma.admin.findUnique({
-      where: { email: 'parfaitericyao123@gmail.com' }
-    })
+    console.log("🚀 Tentative de réinitialisation de l'admin...")
 
-    if (existingAdmin) {
-      return NextResponse.json({ message: "L'admin existe déjà !" })
+    const email = 'parfaitericyao123@gmail.com'
+    const password = 'Eric2003***'
+
+    // On supprime l'ancien s'il existe pour être sûr de repartir à zéro
+    try {
+      await prisma.admin.deleteMany({
+        where: { email }
+      })
+    } catch (e) {
+      console.log("Note: Pas d'admin à supprimer.")
     }
 
-    // Créer l'admin
-    const hashedPassword = await bcrypt.hash('Eric2003***', 12)
-    await prisma.admin.create({
+    // On crée le nouveau
+    const hashedPassword = await bcrypt.hash(password, 12)
+    const newAdmin = await prisma.admin.create({
       data: {
-        email: 'parfaitericyao123@gmail.com',
+        email,
         password: hashedPassword,
       }
     })
 
-    return NextResponse.json({ message: "Compte Admin créé avec succès ! Vous pouvez vous connecter." })
+    return NextResponse.json({ 
+      success: true, 
+      message: "Compte Admin RÉINITIALISÉ avec succès !",
+      email: newAdmin.email 
+    })
+
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("❌ Erreur dans seed-admin:", error.message)
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message,
+      tip: "Vérifiez que votre DATABASE_URL est correcte sur Vercel."
+    }, { status: 500 })
   }
 }
