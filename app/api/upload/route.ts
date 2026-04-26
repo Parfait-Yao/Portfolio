@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth"
 import { uploadImage } from "@/lib/cloudinary"
 import { NextResponse } from "next/server"
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
   const session = await auth()
   if (!session) return new NextResponse('Unauthorized', { status: 401 })
