@@ -1,34 +1,32 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { neon } from "@neondatabase/serverless"
 import { NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Pilote HTTP direct pour Neon (plus stable au build)
-const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null
-
 export async function GET() {
-  if (!sql) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
-  
   try {
-    // Utilisation du pilote HTTP direct pour éviter les soucis de Prisma au build
+    const { neon } = await import("@neondatabase/serverless")
+    const DATABASE_URL = process.env.DATABASE_URL
+    
+    if (!DATABASE_URL) return NextResponse.json({})
+    
+    const sql = neon(DATABASE_URL)
     const results = await sql`SELECT * FROM "About" LIMIT 1`
     return NextResponse.json(results[0] || {})
   } catch (error) {
-    console.error("[ABOUT_GET]", error)
-    // Fallback silencieux vers un objet vide pour ne pas faire planter le build
     return NextResponse.json({})
   }
 }
 
 export async function PUT(req: Request) {
-  const session = await auth()
-  if (!session) return new NextResponse('Unauthorized', { status: 401 })
-
   try {
+    const { auth } = await import("@/lib/auth")
+    const session = await auth()
+    if (!session) return new NextResponse('Unauthorized', { status: 401 })
+
+    const { prisma } = await import("@/lib/prisma")
+    const { revalidatePath } = await import("next/cache")
+    
     const data = await req.json()
     const { id, ...fields } = data
 
