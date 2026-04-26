@@ -1,153 +1,133 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import React from "react"
 import { 
+  Users, 
   Briefcase, 
   Code2, 
-  Mail, 
-  MessageSquare,
-  ArrowRight,
-  ExternalLink,
-  ChevronRight,
-  Clock
+  MessageSquare, 
+  GraduationCap,
+  TrendingUp,
+  Clock,
+  ExternalLink
 } from "lucide-react"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
 
-export default async function DashboardPage() {
-  const session = await auth()
-  
-  // Fetch real data from Prisma
+export const dynamic = 'force-dynamic'
+
+export default async function AdminDashboard() {
+  // Imports dynamiques pour éviter les erreurs au build
+  const { prisma } = await import("@/lib/prisma")
+
   const [
-    projectsCount, 
-    skillsCount, 
-    messagesCount,
-    unreadMessagesCount,
-    recentProjects,
+    experienceCount,
+    projectCount,
+    skillCount,
+    messageCount,
+    educationCount,
     recentMessages
   ] = await Promise.all([
+    prisma.experience.count(),
     prisma.project.count(),
     prisma.skill.count(),
     prisma.message.count(),
-    prisma.message.count({ where: { read: false } }),
-    prisma.project.findMany({ take: 5, orderBy: { createdAt: 'desc' } }),
-    prisma.message.findMany({ take: 5, orderBy: { createdAt: 'desc' } })
+    prisma.education.count(),
+    prisma.message.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' }
+    })
   ])
 
   const stats = [
-    { title: "Projets réalisés", value: projectsCount, icon: Briefcase },
-    { title: "Compétences", value: skillsCount, icon: Code2 },
-    { title: "Messages total", value: messagesCount, icon: Mail },
-    { title: "Non lus", value: unreadMessagesCount, icon: MessageSquare, highlight: unreadMessagesCount > 0 },
+    { label: "Expériences", value: experienceCount, icon: Briefcase, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: "Projets", value: projectCount, icon: Code2, color: "text-purple-500", bg: "bg-purple-500/10" },
+    { label: "Compétences", value: skillCount, icon: TrendingUp, color: "text-green-500", bg: "bg-green-500/10" },
+    { label: "Messages", value: messageCount, icon: MessageSquare, color: "text-orange-500", bg: "bg-orange-500/10" },
+    { label: "Éducation", value: educationCount, icon: GraduationCap, color: "text-cyan-500", bg: "bg-cyan-500/10" },
   ]
 
   return (
-    <div className="space-y-12">
-      {/* Welcome Header */}
-      <section>
-        <span className="inline-flex items-center gap-1.5 bg-[#EFEFEB] text-foreground/80 px-3 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
-          Tableau de bord
-        </span>
-        <h1 className="font-display text-[clamp(32px,5vw,48px)] leading-[1.1] text-foreground">
-          Ravi de vous revoir, <span className="text-muted-foreground">Directeur.</span>
-        </h1>
-      </section>
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">Bienvenue dans votre espace d'administration.</p>
+      </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-muted rounded-2xl border border-border p-8 hover:border-[#D0D0CB] transition-colors group">
-            <div className="flex justify-between items-start mb-6">
-              <div className="w-10 h-10 bg-card rounded-xl border border-border flex items-center justify-center text-foreground">
-                <stat.icon size={18} strokeWidth={1.5} />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all border-border/50">
+            <div className="flex items-center gap-4">
+              <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
+                <stat.icon size={20} />
               </div>
-              {stat.highlight && (
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-              )}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                <p className="text-2xl font-bold">{stat.value}</p>
+              </div>
             </div>
-            <p className="font-display text-4xl text-foreground mb-1">{stat.value}</p>
-            <p className="font-body text-[13px] font-bold text-muted-foreground uppercase tracking-widest">{stat.title}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        {/* Recent Projects Table */}
-        <div className="xl:col-span-8 bg-card rounded-2xl border border-border p-8 overflow-hidden">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h3 className="font-display text-2xl text-foreground">Projets récents</h3>
-              <p className="font-body text-[13px] text-muted-foreground">Gestion des dernières publications.</p>
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Messages Récents */}
+        <div className="rounded-xl border bg-card shadow-sm border-border/50 overflow-hidden">
+          <div className="p-6 border-b border-border/50 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare size={18} className="text-muted-foreground" />
+              <h2 className="font-semibold">Messages Récents</h2>
             </div>
-            <Link href="/admin/projects" className="font-body text-[12px] font-bold text-foreground flex items-center gap-1.5 hover:opacity-60 transition-opacity uppercase tracking-widest">
-              Gérer tout <ArrowRight size={14} />
-            </Link>
+            <button className="text-xs text-primary hover:underline flex items-center gap-1">
+              Voir tout <ExternalLink size={12} />
+            </button>
           </div>
-
-          <div className="overflow-x-auto -mx-8">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-border bg-muted/50 px-8">
-                  <th className="py-4 px-8 font-body text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Titre</th>
-                  <th className="py-4 px-8 font-body text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Stack</th>
-                  <th className="py-4 px-8 font-body text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E8E8E4]">
-                {recentProjects.map((project: any) => (
-                  <tr key={project.id} className="group hover:bg-muted transition-colors">
-                    <td className="py-5 px-8 font-body text-[15px] font-bold text-foreground">
-                      {project.title}
-                      {project.featured && <span className="ml-3 text-[9px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded uppercase font-bold tracking-widest">Pub</span>}
-                    </td>
-                    <td className="py-5 px-8">
-                      <div className="flex gap-1.5">
-                        {project.tags.slice(0, 2).map((tag: any, i: number) => (
-                          <span key={i} className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest border border-border px-1.5 py-0.5 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="py-5 px-8">
-                      <Link href={`/projects/${project.id}`} target="_blank" className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-widest">
-                        Aperçu <ExternalLink size={12} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Recent Messages */}
-        <div className="xl:col-span-4 bg-muted rounded-2xl border border-border p-8">
-          <div className="flex items-center justify-between mb-10">
-            <h3 className="font-display text-2xl text-foreground">Flux messages</h3>
-            <Link href="/admin/messages" className="font-body text-[12px] font-bold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-widest">Tout</Link>
-          </div>
-
-          <div className="space-y-6">
+          <div className="divide-y divide-border/50">
             {recentMessages.length > 0 ? (
-              recentMessages.map((msg: any) => (
-                <div key={msg.id} className="relative group">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className={cn("font-body text-[14px] font-bold", !msg.read ? "text-foreground" : "text-muted-foreground")}>{msg.name}</h4>
-                    {!msg.read && <span className="w-2 h-2 rounded-full bg-primary"></span>}
+              recentMessages.map((msg) => (
+                <div key={msg.id} className="p-4 hover:bg-muted/50 transition-colors">
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="font-medium text-sm">{msg.name}</p>
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <Clock size={10} />
+                      {new Date(msg.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
-                  <p className="font-body text-[12px] text-muted-foreground mb-1 truncate">{msg.subject}</p>
-                  <div className="flex items-center gap-1.5 text-[10px] text-[#B0B0B0] font-bold uppercase tracking-widest">
-                    <Clock size={10} /> {new Date(msg.createdAt).toLocaleDateString()}
-                  </div>
-                  <ChevronRight size={14} className="absolute top-1/2 -right-2 -translate-y-1/2 text-[#E8E8E4] group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-                  <div className="mt-4 border-b border-border"></div>
+                  <p className="text-xs text-muted-foreground line-clamp-1">{msg.subject}</p>
                 </div>
               ))
             ) : (
-              <div className="text-center py-20 border border-dashed border-border rounded-xl">
-                 <p className="font-body text-[14px] text-muted-foreground">Boîte vide.</p>
+              <div className="p-8 text-center text-sm text-muted-foreground">
+                Aucun message reçu pour le moment.
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Quick Actions / Status */}
+        <div className="rounded-xl border bg-card shadow-sm border-border/50 p-6 space-y-6">
+          <h2 className="font-semibold flex items-center gap-2">
+            <Clock size={18} className="text-muted-foreground" />
+            Statut du Portfolio
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-sm font-medium">Site Public</span>
+              </div>
+              <span className="text-xs font-bold text-green-500 uppercase">Online</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-sm font-medium">Base de données</span>
+              </div>
+              <span className="text-xs font-bold text-green-500 uppercase">Connected</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-sm font-medium">API Cloudinary</span>
+              </div>
+              <span className="text-xs font-bold text-blue-500 uppercase">Active</span>
+            </div>
           </div>
         </div>
       </div>
