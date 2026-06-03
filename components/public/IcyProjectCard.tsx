@@ -1,175 +1,195 @@
 "use client"
-import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import React, { useRef, useState } from "react"
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
 import Link from "next/link"
-import { Heart, ExternalLink, ArrowUpRight, Sparkles } from "lucide-react"
+import { Heart, ExternalLink, ArrowUpRight } from "lucide-react"
+import { FaGithub } from "react-icons/fa6"
 import { cn } from "@/lib/utils"
 
-export default function IcyProjectCard({ project }: { project: any }) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [likes, setLikes] = useState(project.likes || 0)
+const fallback = [
+  "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1400&auto=format&fit=crop",
+]
+
+interface Props {
+  project: any
+  index?: number
+  featured?: boolean /* spans 2 columns when true */
+}
+
+export default function IcyProjectCard({ project, index = 0, featured = false }: Props) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [likes,    setLikes]    = useState(project.likes || 0)
   const [hasLiked, setHasLiked] = useState(false)
+  const [hovered,  setHovered]  = useState(false)
+
+  /* subtle tilt */
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [3, -3]), { stiffness: 300, damping: 30 })
+  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-3, 3]), { stiffness: 300, damping: 30 })
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect()
+    mx.set((e.clientX - left) / width  - 0.5)
+    my.set((e.clientY - top)  / height - 0.5)
+  }
+  const onLeave = () => { mx.set(0); my.set(0); setHovered(false) }
 
   const handleLike = async (e: React.MouseEvent) => {
-    e.preventDefault()
+    e.preventDefault(); e.stopPropagation()
     if (hasLiked) return
-    setLikes(likes + 1)
-    setHasLiked(true)
-    try {
-      await fetch(`/api/projects/${project.id}/like`, { method: "PATCH" })
-    } catch (error) {
-      setLikes(likes)
-      setHasLiked(false)
-    }
+    setLikes((n: number) => n + 1); setHasLiked(true)
+    try { await fetch(`/api/projects/${project.id}/like`, { method: "PATCH" }) }
+    catch { setLikes((n: number) => n - 1); setHasLiked(false) }
   }
 
-  const tags = project.tags || []
-  const defaultImage = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop"
+  const image = project.imageUrl || fallback[index % fallback.length]
+  const tags  = (project.tags || []).slice(0, 3)
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      ref={cardRef}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group relative h-[400px] w-full perspective-1000"
+      transition={{ duration: 0.65, delay: (index % 3) * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      style={{ rotateX: rx, rotateY: ry, transformPerspective: 1600, transformStyle: "preserve-3d" }}
+      onMouseMove={onMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={onLeave}
+      className={cn("group relative cursor-default", featured && "md:col-span-2")}
     >
-      {/* Glow Effect Background */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-[32px] blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-      
-      <div className="relative h-full w-full bg-background/40 backdrop-blur-xl border border-white/20 rounded-[32px] overflow-hidden shadow-2xl flex flex-col transition-all duration-500 group-hover:border-white/40">
-        
-        {/* Image Container with "Frost" Overlay */}
-        <div className="relative h-[50%] w-full overflow-hidden">
-          <motion.img
-            src={project.imageUrl || defaultImage}
-            alt={project.title}
-            animate={{ scale: isHovered ? 1.1 : 1 }}
-            transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
-            className="h-full w-full object-cover"
-          />
-          
-          {/* Icy Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-background/90" />
-          
-          {/* Shimmer Effect */}
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                initial={{ x: "-100%" }}
-                animate={{ x: "200%" }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 pointer-events-none"
-              />
-            )}
-          </AnimatePresence>
+      {/* ── Card ── */}
+      <div className={cn(
+        "relative overflow-hidden rounded-2xl bg-foreground",
+        featured ? "aspect-[16/7]" : "aspect-[4/5]"
+      )}>
 
-          {/* Floating Badges (Tags) */}
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[80%]">
-            {tags.slice(0, 3).map((tag: string, i: number) => (
-              <span key={i} className="px-2.5 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] font-bold uppercase tracking-wider text-white shadow-sm">
+        {/* ── Full-bleed image ── */}
+        <motion.img
+          src={image}
+          alt={project.title}
+          animate={{ scale: hovered ? 1.06 : 1 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* ── Gradient scrim — always visible from bottom ── */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+        {/* ── Hover: darker centre vignette ── */}
+        <div className={cn(
+          "absolute inset-0 bg-black/20 transition-opacity duration-700",
+          hovered ? "opacity-100" : "opacity-0"
+        )} />
+
+        {/* ══ TOP ROW ══ */}
+        <div className="absolute top-5 left-5 right-5 flex items-start justify-between z-20">
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5">
+            {tags.map((tag: string, i: number) => (
+              <span key={i} className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 rounded-full text-[9px] font-extrabold uppercase tracking-[0.18em] text-white/80">
                 {tag}
               </span>
             ))}
           </div>
 
-          {/* Top Right Actions */}
-          <div className="absolute top-3 right-3 flex flex-col gap-1.5">
-            <button 
-              onClick={handleLike}
-              className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-md border",
-                hasLiked 
-                  ? "bg-red-500/20 border-red-500/50 text-red-500" 
-                  : "bg-white/10 border-white/20 text-white hover:bg-white/20"
-              )}
-            >
-              <Heart size={16} className={hasLiked ? "fill-current" : ""} />
-            </button>
-            
-            {project.githubUrl && (
-              <a 
-                href={project.githubUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
-                title="View Code"
-              >
-                <Sparkles size={14} />
-              </a>
-            )}
-          </div>
+          {/* Featured badge */}
+          {project.featured && (
+            <span className="px-3 py-1 bg-amber-400/15 backdrop-blur-md border border-amber-400/30 rounded-full text-[9px] font-extrabold uppercase tracking-widest text-amber-300">
+              ★ Sélectionné
+            </span>
+          )}
         </div>
 
-        {/* Content Section */}
-        <div className="relative flex-1 p-5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-cyan-400/80">Stack</span>
-              </div>
-            </div>
-            
-            <h3 className="text-xl font-display font-bold text-foreground mb-1.5 group-hover:text-primary transition-colors duration-300 truncate">
-              {project.title}
-            </h3>
-            
-            <p className="text-muted-foreground text-[13px] line-clamp-2 font-body leading-relaxed mb-3">
-              {project.description}
-            </p>
+        {/* ══ BOTTOM CONTENT — slides up on hover ══ */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 md:p-7">
 
-            {/* Technologies Grid */}
-            <div className="flex flex-wrap gap-x-3 gap-y-1.5 mb-3">
-              {tags.slice(0, 3).map((tag: string, i: number) => (
-                <div key={i} className="flex items-center gap-1">
-                  <div className="w-1 h-1 rounded-full bg-primary/40" />
-                  <span className="text-[10px] font-medium text-foreground/70">{tag}</span>
-                </div>
-              ))}
-            </div>
+          {/* Index number — editorial touch */}
+          <div className={cn(
+            "text-white/20 font-clash text-[11px] font-bold tracking-[0.3em] uppercase mb-3 transition-all duration-500",
+            hovered ? "opacity-0 -translate-y-1" : "opacity-100"
+          )}>
+            {String(index + 1).padStart(2, "0")} /
           </div>
 
-          <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
-             <div className="flex items-center gap-3">
-               <div className="flex items-center gap-1">
-                 <span className="text-xs font-bold text-foreground">{likes}</span>
-                 <Heart size={10} className="text-red-500 fill-red-500/20" />
-               </div>
-             </div>
+          {/* Title */}
+          <h3 className={cn(
+            "font-serif text-white leading-[1.05] tracking-tight transition-all duration-500",
+            featured ? "text-[clamp(24px,4vw,42px)]" : "text-[clamp(20px,2.5vw,28px)]"
+          )}>
+            {project.title}
+          </h3>
 
-            <div className="flex gap-1.5">
-              {project.liveUrl && (
-                <a 
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white/5 border border-white/10 rounded-full text-foreground hover:bg-white/10 transition-all"
+          {/* Description — appears on hover */}
+          <motion.p
+            initial={false}
+            animate={{ height: hovered ? "auto" : 0, opacity: hovered ? 1 : 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="text-white/55 text-[13px] leading-relaxed mt-2 overflow-hidden max-w-md"
+          >
+            {project.description}
+          </motion.p>
+
+          {/* ── Divider + actions ── */}
+          <div className={cn(
+            "flex items-center justify-between mt-5 pt-4 border-t border-white/10 transition-all duration-500",
+            hovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+          )}>
+            {/* Left: like */}
+            <button
+              onClick={handleLike}
+              className={cn(
+                "flex items-center gap-2 text-[11px] font-bold transition-all duration-200",
+                hasLiked ? "text-red-400" : "text-white/40 hover:text-white/70"
+              )}
+            >
+              <Heart size={13} className={cn(hasLiked && "fill-current")} />
+              <span>{likes}</span>
+            </button>
+
+            {/* Right: action buttons */}
+            <div className="flex items-center gap-2">
+              {project.githubUrl && (
+                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center text-white/60 hover:bg-white/20 hover:text-white transition-all hover:scale-110"
                 >
-                  <ExternalLink size={14} />
+                  <FaGithub size={13} />
                 </a>
               )}
-              <Link 
+              {project.liveUrl && (
+                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center text-white/60 hover:bg-white/20 hover:text-white transition-all hover:scale-110"
+                >
+                  <ExternalLink size={13} />
+                </a>
+              )}
+              <Link
                 href={`/projects/${project.id}`}
-                className="group/btn relative px-4 py-2 bg-foreground text-background rounded-full font-bold text-[10px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                onClick={e => e.stopPropagation()}
+                className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-widest hover:bg-white/90 transition-all hover:scale-[1.03] active:scale-95 shadow-lg"
               >
-                <span className="relative z-10">Détails</span>
-                <ArrowUpRight size={12} className="relative z-10" />
-                <motion.div 
-                  className="absolute inset-0 bg-primary"
-                  initial={{ y: "100%" }}
-                  whileHover={{ y: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
+                Voir
+                <ArrowUpRight size={11} />
               </Link>
             </div>
           </div>
         </div>
-        
-        {/* Frosty Border Bottom Accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        {/* ── Arrow peek (top-right) — visible without hover ── */}
+        <div className={cn(
+          "absolute top-5 right-5 w-10 h-10 rounded-full bg-white/8 backdrop-blur-md border border-white/12 flex items-center justify-center text-white/50 transition-all duration-400",
+          hovered ? "opacity-0 scale-90" : "opacity-100 scale-100",
+          project.featured && "hidden" // hide when featured badge is shown
+        )}>
+          <ArrowUpRight size={16} />
+        </div>
       </div>
     </motion.div>
   )

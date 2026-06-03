@@ -3,64 +3,64 @@ import React from "react"
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Home, Briefcase, Code, User, MessageSquare } from "lucide-react"
-
-const navLinks = [
-  { name: "Accueil", href: "/", icon: Home },
-  { name: "Projets", href: "/projects", icon: Code },
-  { name: "Expériences", href: "/experience", icon: Briefcase },
-  { name: "Skills", href: "/skills", icon: User },
-  { name: "Contact", href: "/contact", icon: MessageSquare },
-]
+import { Home, Briefcase, Code2, Layers, MessageSquare } from "lucide-react"
+import { useLanguage } from '@/context/LanguageContext'
 
 export default function BottomNav() {
   const pathname = usePathname()
+  const { t } = useLanguage()
+
+  const navLinks = [
+    { name: t.nav.home,       href: "/",           icon: Home },
+    { name: t.nav.projects,   href: "/projects",   icon: Code2 },
+    { name: t.nav.experience, href: "/experience", icon: Briefcase },
+    { name: t.nav.skills,     href: "/skills",     icon: Layers },
+    { name: t.nav.contact,    href: "/contact",    icon: MessageSquare },
+  ]
 
   return (
-    <nav className="md:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300">
-      <div className="glass-pill p-1.5 flex items-center gap-1">
+    <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100]">
+      <div className="bottom-nav-bar p-1.5 flex items-center gap-0.5">
         {navLinks.map((link) => {
           const isActive = pathname === link.href
           const Icon = link.icon
-          
+
           return (
-            <Link 
-              key={link.name} 
+            <Link
+              key={link.name}
               href={link.href}
-              className={`relative flex flex-col items-center justify-center min-w-[64px] h-14 rounded-2xl transition-colors duration-300 ${
-                isActive ? 'text-primary' : 'text-foreground/40 hover:text-foreground/70'
-              }`}
+              className="relative flex flex-col items-center justify-center w-[58px] h-[54px] rounded-[22px] transition-colors duration-200"
             >
               <AnimatePresence>
                 {isActive && (
-                  <motion.div 
-                    layoutId="bottom-nav-active"
-                    className="absolute inset-0 bg-primary/10 rounded-2xl"
-                    initial={{ opacity: 0, scale: 0.9 }}
+                  <motion.div
+                    layoutId="bottom-pill"
+                    className="absolute inset-0 rounded-[22px] bg-gradient-primary"
+                    initial={{ opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
+                    exit={{ opacity: 0, scale: 0.85 }}
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
                   />
                 )}
               </AnimatePresence>
-              
-              <Icon 
-                size={20} 
-                className="relative z-10 mb-1" 
+
+              <Icon
+                size={19}
+                className={`relative z-10 mb-0.5 transition-all duration-200 ${
+                  isActive ? 'text-white' : 'text-foreground/40'
+                }`}
                 strokeWidth={isActive ? 2.5 : 2}
               />
-              
-              <span className="relative z-10 text-[9px] font-bold uppercase tracking-wider">
+
+              <span className={`relative z-10 text-[8px] font-bold uppercase tracking-wide transition-colors duration-200 ${
+                isActive ? 'text-white/90' : 'text-foreground/35'
+              }`}>
                 {link.name}
               </span>
-              
-              <span className="sr-only">{link.name}</span>
             </Link>
-
           )
         })}
       </div>
     </nav>
   )
 }
-

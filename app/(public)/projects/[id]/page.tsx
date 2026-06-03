@@ -73,7 +73,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               <img 
                 src={p.imageUrl} 
                 alt={p.title}
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" 
+                className="w-full h-full object-cover" 
               />
             </div>
           )}
@@ -93,7 +93,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   href={p.liveUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-body font-medium hover:opacity-90 transition-all flex items-center justify-center gap-3 text-sm shadow-xl"
+                  className="bg-gradient-primary text-white px-8 py-4 rounded-full font-body font-medium hover:opacity-90 transition-all flex items-center justify-center gap-3 text-sm shadow-xl shimmer"
                 >
                   Voir le site live <ExternalLink size={14} strokeWidth={2} />
                 </a>
@@ -119,7 +119,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           <h2 className="font-serif text-[clamp(36px,5vw,64px)] leading-[1.1] mb-8 text-foreground">
             Inspiré par ce travail ? <br /> <span className="text-foreground/50">Collaborons ensemble.</span>
           </h2>
-          <Link href="/contact" className="bg-primary text-primary-foreground px-10 py-5 rounded-full font-body font-medium hover:opacity-90 transition-all inline-flex items-center gap-3 text-[18px] shadow-xl">
+          <Link href="/contact" className="bg-gradient-primary text-white px-10 py-5 rounded-full font-body font-medium hover:opacity-90 transition-all inline-flex items-center gap-3 text-[18px] shadow-xl shimmer">
             Lancer un projet
           </Link>
         </div>

@@ -1,46 +1,47 @@
 "use client"
-import React, { useRef } from "react"
-import { 
-  Zap, 
-  Atom, 
-  Code2, 
-  Server, 
-  Database, 
-  Wind, 
-  Box, 
-  GitBranch, 
-  Image,
-  Layers
-} from "lucide-react"
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
+import { useRef } from "react"
+import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion"
 
-const getIcon = (name: string) => {
-  const icons: Record<string, any> = {
-    'Next.js': Zap,
-    'React': Atom,
-    'TypeScript': Code2,
-    'Node.js': Server,
-    'Prisma': Database,
-    'Tailwind': Wind,
-    'PostgreSQL': Database,
-    'Three.js': Box,
-    'Git': GitBranch,
-    'Cloudinary': Image,
-  }
-  return icons[name] || Layers
+const techConfig: Record<string, { svg: React.ReactNode; color: string; bg: string }> = {
+  'Next.js': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M11.572 0c-.176 0-.31.001-.358.007a19.76 19.76 0 0 1-.364.033C7.443.346 4.25 2.185 2.228 5.012a11.875 11.875 0 0 0-2.119 5.243c-.096.659-.108.854-.108 1.747s.012 1.089.108 1.748c.652 4.506 3.86 8.292 8.209 9.695.779.25 1.6.422 2.534.525.363.04 1.935.04 2.299 0 1.611-.178 2.977-.577 4.323-1.264.207-.106.247-.134.219-.158-.02-.013-.9-1.193-1.955-2.62l-1.919-2.592-2.404-3.558a338.739 338.739 0 0 0-2.422-3.556c-.009-.002-.018 1.579-.023 3.51-.007 3.38-.01 3.515-.052 3.595a.426.426 0 0 1-.206.214c-.075.037-.14.044-.495.044H7.81l-.108-.068a.438.438 0 0 1-.157-.171l-.049-.106.005-4.703.007-4.705.073-.091a.637.637 0 0 1 .174-.143c.096-.047.134-.051.54-.051.478 0 .558.018.682.154.035.038 1.337 1.999 2.895 4.361a10760.433 10760.433 0 0 0 4.735 7.17l1.9 2.879.096-.063a12.317 12.317 0 0 0 2.466-2.163 11.944 11.944 0 0 0 2.824-6.134c.096-.66.108-.854.108-1.748 0-.893-.012-1.088-.108-1.747-.652-4.506-3.859-8.292-8.208-9.695a12.597 12.597 0 0 0-2.499-.523A33.119 33.119 0 0 0 11.572 0z"/></svg>,
+    color: "text-foreground", bg: "bg-foreground/8",
+  },
+  'React': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38a2.167 2.167 0 0 0-1.092-.278zm-.005 1.09c.145 0 .277.028.396.08.81.433 1.14 2.294.703 4.734l-.065.361a19.08 19.08 0 0 0-2.928-.602 19.08 19.08 0 0 0-2.07-2.17c1.411-1.323 2.748-2.403 3.964-2.403zm-9.987 0c1.215 0 2.552 1.079 3.964 2.402a19.3 19.3 0 0 0-2.07 2.17 19.2 19.2 0 0 0-2.928.602l-.065-.36c-.44-2.44-.107-4.302.703-4.735.12-.053.25-.08.396-.08zm5 2.52a17.7 17.7 0 0 1 1.457 1.523 17.7 17.7 0 0 1-1.457.077 17.7 17.7 0 0 1-1.457-.077 17.7 17.7 0 0 1 1.457-1.523zm-4.387 3.015a17.4 17.4 0 0 1 2.426-.475 17.4 17.4 0 0 1 1.104 1.96 17.4 17.4 0 0 1-1.108 1.965 17.4 17.4 0 0 1-2.422-.48A17.4 17.4 0 0 1 8.5 12.01zm8.774 0a17.4 17.4 0 0 1-.553 2.97 17.4 17.4 0 0 1-2.422.48 17.4 17.4 0 0 1-1.108-1.965 17.4 17.4 0 0 1 1.104-1.96 17.4 17.4 0 0 1 2.426.475z"/></svg>,
+    color: "text-[#61DAFB]", bg: "bg-[#61DAFB]/10",
+  },
+  'TypeScript': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z"/></svg>,
+    color: "text-[#3178C6]", bg: "bg-[#3178C6]/10",
+  },
+  'Node.js': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M11.998 24c-.321 0-.641-.084-.922-.247l-2.936-1.737c-.438-.245-.224-.332-.08-.383.585-.203.703-.25 1.328-.604.065-.037.151-.023.218.017l2.256 1.339c.082.045.197.045.272 0l8.795-5.076c.082-.047.134-.141.134-.238V6.921c0-.099-.053-.19-.137-.242l-8.791-5.072c-.081-.047-.189-.047-.271 0L3.075 6.68c-.084.05-.139.146-.139.241v10.15c0 .097.055.189.139.235l2.409 1.392c1.307.654 2.108-.116 2.108-.891V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.111.255.253v10.021c0 1.745-.95 2.745-2.604 2.745-.508 0-.909 0-2.026-.551L2.28 18.675A1.849 1.849 0 0 1 1.356 17.1V6.921c0-.66.351-1.275.922-1.606l8.795-5.082a1.859 1.859 0 0 1 1.849 0l8.794 5.082a1.851 1.851 0 0 1 .925 1.606V17.1c0 .659-.353 1.271-.925 1.609l-8.794 5.079a1.86 1.86 0 0 1-.924.212zm2.718-6.981c-3.855 0-4.663-1.772-4.663-3.26 0-.142.113-.253.255-.253h1.138c.127 0 .233.091.253.217.172 1.157.684 1.742 3.017 1.742 1.858 0 2.649-.42 2.649-1.406 0-.567-.225-.988-3.112-1.271-2.415-.24-3.907-.771-3.907-2.702 0-1.781 1.501-2.842 4.016-2.842 2.825 0 4.224.98 4.402 3.085a.255.255 0 0 1-.065.193.25.25 0 0 1-.186.081h-1.142a.253.253 0 0 1-.248-.207c-.275-1.218-.943-1.609-2.761-1.609-2.035 0-2.271.709-2.271 1.241 0 .644.279.832 3.015 1.195 2.708.36 4.001.872 4.001 2.763 0 1.921-1.601 3.032-4.389 3.032z"/></svg>,
+    color: "text-[#539E43]", bg: "bg-[#539E43]/10",
+  },
+  'Tailwind': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/></svg>,
+    color: "text-[#06B6D4]", bg: "bg-[#06B6D4]/10",
+  },
+  'Prisma': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M21.807 18.285 13.553.765a1.753 1.753 0 0 0-3.132.017L2.191 18.29a1.753 1.753 0 0 0 1.385 2.581l7.594.013h.014a1.77 1.77 0 0 0 1.756-2.136l-.004-.02c-.034-.136-.048-.266-.044-.395l.035-1.154a1.26 1.26 0 0 1 1.26-1.222h.002l3.02.005a1.762 1.762 0 0 0 1.695-2.273l-2.8-8.4.005.009 3.516 8.757a1.752 1.752 0 0 0 2.178 1.23z"/></svg>,
+    color: "text-primary/70", bg: "bg-primary/8",
+  },
+  'PostgreSQL': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M17.128 0a10.134 10.134 0 0 0-2.755.403l-.063.02A10.922 10.922 0 0 0 12.6.258C11.422.238 10.41.524 9.594 1 8.79.721 7.122.24 5.364.336 4.14.403 2.804.775 1.814 1.82.827 2.865.305 4.434.415 6.734c.024.506.045 1.6.19 2.87.166 1.42.455 3.04.965 4.065.15.305.347.6.676.668.145.03.296.01.434-.051l.035-.018c.027.067.067.124.107.182v.002a.727.727 0 0 0 .597.301c.085 0 .17-.013.25-.037.078-.023.148-.057.214-.099-.094.85-.103 1.7-.085 2.394.03 1.1.125 1.96.198 2.405.033.203.21 1.64 1.24 2.66.46.45 1.064.772 1.82.899.563.094 1.205.085 1.986-.076.66-.138 1.3-.337 1.983-.61.668-.27 1.352-.656 1.914-1.2l.071-.071c.056.057.113.112.169.166.46.423 1.015.7 1.62.862a5.8 5.8 0 0 0 1.328.178c.432.006.824-.04 1.143-.116 1.178-.274 1.903-1.04 2.227-1.87.278-.71.306-1.44.265-2.045l-.037-.38.022.01c.213.094.44.147.645.132.233-.017.43-.105.591-.26.375-.359.51-1.02.564-1.73.13-1.72-.064-4.16-.43-5.44a17.97 17.97 0 0 0-.65-1.94c.46-.77.664-1.79.735-2.716.088-1.172.025-2.226-.06-2.85-.044-.32-.388-2.01-1.638-2.942A3.814 3.814 0 0 0 17.128 0z"/></svg>,
+    color: "text-[#336791]", bg: "bg-[#336791]/10",
+  },
+  'Three.js': {
+    svg: <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]"><path d="M.38 0a.268.268 0 0 0-.256.332l3.891 18.992a.268.268 0 0 0 .403.174l18.59-9.498a.268.268 0 0 0-.003-.473L.64.043A.268.268 0 0 0 .38 0zm.986 1.553l16.247 7.22-13.845 7.074L.9 2.717zm4.835 15.02l.551 2.69-2.525-1.713zm-.273 3.022l-.24.123-.586-2.86.826.56zm-2.818-2.208l2.865 1.944-.017.009-2.848-1.952zm3.432 2.15l-.55-2.689 12.653-6.466.016-.008.001.003z"/></svg>,
+    color: "text-foreground/60", bg: "bg-foreground/6",
+  },
 }
 
-interface TechCellProps {
-  name: string
-  label: string
-}
-
-export default function TechCell({ name, label }: TechCellProps) {
-  const ref = useRef<HTMLDivElement>(null)
+export default function TechCell({ name, label }: { name: string; label: string }) {
+  const ref    = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-
-  const Icon = getIcon(name)
+  const cfg    = techConfig[name]
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return
@@ -49,34 +50,26 @@ export default function TechCell({ name, label }: TechCellProps) {
     mouseY.set(e.clientY - top)
   }
 
-  const background = useMotionTemplate`radial-gradient(120px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.06), transparent 80%)`
+  const bg = useMotionTemplate`radial-gradient(90px circle at ${mouseX}px ${mouseY}px, rgba(99,102,241,0.07), transparent)`
 
   return (
-    <div 
+    <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
-      className="relative flex items-center gap-4 px-8 py-5 group cursor-default transition-all duration-500 bg-card border border-border rounded-full hover:border-primary/20 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] overflow-hidden"
+      whileHover={{ y: -4, scale: 1.04 }}
+      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+      className="relative flex items-center gap-3.5 px-5 py-3.5 bg-card border border-border rounded-2xl cursor-default overflow-hidden hover:border-primary/25 hover:shadow-[0_8px_28px_-6px_rgba(99,102,241,0.12)] dark:hover:shadow-[0_8px_28px_-6px_rgba(99,102,241,0.2)] transition-shadow duration-300"
     >
-      {/* Spotlight effect for the cell */}
-      <motion.div 
-        className="absolute inset-0 z-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background }}
-      />
+      <motion.div className="absolute inset-0 pointer-events-none" style={{ background: bg }} />
 
-      {/* Icon */}
-      <div className="relative z-10 text-foreground/40 group-hover:text-foreground transition-colors duration-500">
-        <Icon size={24} strokeWidth={1.5} />
+      <div className={`relative z-10 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${cfg?.bg || 'bg-primary/6'} ${cfg?.color || 'text-primary/60'}`}>
+        {cfg?.svg || <span className="text-base">⬡</span>}
       </div>
 
-      {/* Text Info */}
-      <div className="relative z-10 flex flex-col min-w-[100px]">
-        <span className="text-foreground font-jakarta text-[13px] font-extrabold uppercase tracking-widest leading-none mb-1">
-          {name}
-        </span>
-        <span className="text-foreground/30 font-jakarta text-[11px] font-medium group-hover:text-foreground/50 transition-colors duration-500">
-          {label}
-        </span>
+      <div className="relative z-10 flex flex-col min-w-[80px]">
+        <span className="text-foreground font-jakarta text-[11px] font-extrabold uppercase tracking-widest leading-none mb-0.5">{name}</span>
+        <span className="text-foreground/45 text-[10px] font-semibold">{label}</span>
       </div>
-    </div>
+    </motion.div>
   )
 }

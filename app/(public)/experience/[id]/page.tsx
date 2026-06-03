@@ -71,7 +71,7 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8">
-                <span className="px-4 py-1.5 bg-primary text-primary-foreground rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-3 inline-block">
+                <span className="px-4 py-1.5 bg-gradient-primary text-white rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-3 inline-block">
                   {exp.current ? "Poste Actuel" : "Mission Terminée"}
                 </span>
                 <h1 className="text-4xl md:text-5xl font-display font-bold text-white leading-tight">
@@ -123,7 +123,7 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
                    <span>{exp.likes} Applaudissements</span>
                  </div>
                </div>
-               <Link href="/contact" className="px-8 py-4 bg-foreground text-background rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+               <Link href="/contact" className="px-8 py-4 bg-gradient-primary text-white rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
                  Discuter de ce profil
                </Link>
             </div>

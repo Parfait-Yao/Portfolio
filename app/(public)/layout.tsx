@@ -30,9 +30,10 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         {children}
       </main>
       <BottomNav />
-      <footer className="hidden md:flex py-16 px-6 max-w-6xl mx-auto w-full border-t border-border/50 justify-between items-start bg-transparent">
+      <footer className="hidden md:flex py-16 px-6 max-w-6xl mx-auto w-full border-t border-border justify-between items-start bg-transparent">
         <div className="flex flex-col gap-4">
-          <Link href="/" className="font-serif text-2xl tracking-tighter text-foreground">
+          <Link href="/" className="font-serif text-2xl tracking-tighter text-foreground flex items-center gap-2">
+            <span className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-clash font-bold bg-gradient-primary">P</span>
             Parfait Eric
           </Link>
           <div className="text-muted-foreground text-[13px] font-medium tracking-wide">
@@ -41,10 +42,10 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </div>
         </div>
         <div className="flex flex-col gap-4 items-end">
-          <div className="flex gap-8 text-[12px] font-bold text-[#888888] uppercase tracking-[0.1em]">
-            <Link href="/about" className="hover:text-[#0A0A0A] transition-colors">{t.nav.experience}</Link>
-            <Link href="/projects" className="hover:text-[#0A0A0A] transition-colors">{t.nav.projects}</Link>
-            <Link href="/contact" className="hover:text-[#0A0A0A] transition-colors">{t.nav.contact}</Link>
+          <div className="flex gap-8 text-[12px] font-bold text-muted-foreground uppercase tracking-[0.1em]">
+            <Link href="/about" className="hover:text-primary transition-colors">{t.nav.experience}</Link>
+            <Link href="/projects" className="hover:text-primary transition-colors">{t.nav.projects}</Link>
+            <Link href="/contact" className="hover:text-primary transition-colors">{t.nav.contact}</Link>
           </div>
           <div className="text-[12px] text-muted-foreground">
             {t.footer.basedIn}
