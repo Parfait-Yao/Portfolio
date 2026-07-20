@@ -25,19 +25,40 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { name, email, subject, body: messageBody } = body
 
-    if (!name || !email || !subject || !messageBody) {
+    if (!name || !email || !messageBody) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    // Use a default subject if none is provided
+    const finalSubject = subject || "Contact via Portfolio"
+
+    // Save to database
     const message = await prisma.message.create({
       data: {
         name,
         email,
-        subject,
+        subject: finalSubject,
         body: messageBody
       }
     })
-    
+
+    // Send email notification via Resend (non-blocking — don't fail the request if email fails)
+    try {
+      const { sendContactEmail } = await import("@/lib/email")
+      const emailResult = await sendContactEmail({
+        name,
+        email,
+        subject: finalSubject,
+        body: messageBody,
+      })
+      if (emailResult?.error) {
+        console.error("Resend email error:", emailResult.error)
+      }
+    } catch (emailError) {
+      console.error("Failed to send contact email notification:", emailError)
+      // Don't fail the API response — the message is already saved in DB
+    }
+
     return NextResponse.json(message)
   } catch (error) {
     console.error("Error creating message:", error)
