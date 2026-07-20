@@ -15,7 +15,7 @@ export async function sendContactEmail(data: {
 
   return resend.emails.send({
     from: 'Portfolio Contact <onboarding@resend.dev>',
-    to: 'parfaitericyao123@gmail.com', // As specified in the blueprint
+    to: 'parfaitericyaojob@gmail.com', // Must match Resend verified email
     replyTo: data.email,
     subject: `[Portfolio] ${data.subject} — de ${data.name}`,
     html: `
